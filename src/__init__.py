@@ -20,10 +20,10 @@ if "bpy" in locals():
     importlib.reload(sm5_addon_utils)
     importlib.reload(preset_saver)
 else:
+    import bpy
     from . import sm5_addon_utils
     from . import preset_saver
 
-import bpy
 
 from bpy.props import (
     PointerProperty,

@@ -295,52 +295,6 @@ presetSaver = preset_saver.PresetSaver(
             ],
             "iterations",
         ],
-        "color_amount": [
-            lambda: bpy.data.node_groups["SM5 Dome"].nodes["color_amount"].inputs[0],
-            "default_value",
-        ],
-        "environment_color": [
-            lambda: bpy.data.node_groups["SM5 Dome"]
-            .nodes["environment_color"]
-            .outputs[0],
-            "default_value",
-            {"type": "list"},
-        ],
-        "light_intensity": [
-            lambda: bpy.data.node_groups["SM5 Dome"].nodes["light_intensity"].inputs[0],
-            "default_value",
-        ],
-        "dome_mapping": [
-            lambda: bpy.data.node_groups["SM5 Dome"].nodes["dome_mapping"].inputs[2],
-            "default_value",
-            {"type": "list"},
-        ],
-        "dome_scale": [lambda: bpy.data.objects["SM5 Environment Dome"], "scale"],
-        "dome_location": [lambda: bpy.data.objects["SM5 Environment Dome"], "location"],
-        "dome_flat": [
-            lambda: bpy.data.shape_keys["Dome Keys"].key_blocks["Flat"],
-            "value",
-        ],
-        "dome_ceiling": [
-            lambda: bpy.data.shape_keys["Dome Keys"].key_blocks["Ceiling Flat"],
-            "value",
-        ],
-        "dome_sphere": [
-            lambda: bpy.data.shape_keys["Dome Keys"].key_blocks["Sphere"],
-            "value",
-        ],
-        "floor_reflection": [
-            lambda: bpy.data.materials["Shadow Catcher Material"]
-            .node_tree.nodes["Principled BSDF"]
-            .inputs[6],
-            "default_value",
-        ],
-        "floor_roughness": [
-            lambda: bpy.data.materials["Shadow Catcher Material"]
-            .node_tree.nodes["Principled BSDF"]
-            .inputs[9],
-            "default_value",
-        ],
         "scalp_color": [
             lambda: bpy.data.materials["SM5 Scalp Material Transhuman"]
             .node_tree.nodes["scalp_color"]
@@ -4606,77 +4560,6 @@ class TRANSHUMAN_PT_MAIN(TranshumanPanel, bpy.types.Panel):
         row.column().label(icon="BLANK1")
         row = box.row()
 
-
-class TRANSHUMAN_PT_ENVIRONMENT_RENDER(TranshumanPanel, bpy.types.Panel):
-    bl_idname = "TRANSHUMAN_PT_ENVIRONMENT_RENDER"
-    bl_parent_id = "TRANSHUMAN_PT_MAIN"
-    bl_label = "ENVIRONMENT DOME"
-
-    def draw(self, context):
-        layout = self.layout
-
-        box = layout.box()
-        row = box.row()
-        row.column().preset_prop("color_amount", text="Colorize Environment")
-        row.column().preset_prop("environment_color", text="")
-
-        row = box.row()
-        row.column().preset_prop("light_intensity", text="Light Intensity")
-        add_open_set_image(
-            row.column(),
-            material="SM5 Environment Dome Material",
-            node="environment_image",
-            group="dome_group",
-        )
-
-        box = layout.box()
-        row = box.row()
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        op = row.column().operator(
-            "wm.url_open", text="Get more Environment Domes", icon="URL"
-        )
-        op.url = "https://sm5.heledahn.com/collections/hdri-images"
-        row.column().label(icon="BLANK1")
-        row = box.row()
-
-        box = layout.box()
-        row = box.row()
-        row.column().preset_prop("dome_mapping", text="World Rotation")
-
-        box = layout.box()
-        row = box.row()
-        row.column().preset_prop("dome_scale", text="World Scale")
-
-        box = layout.box()
-        row = box.row()
-        row.column().preset_prop("dome_location", text="World Position")
-
-        box = layout.box()
-        row = box.row()
-        row.column().label(text="Flatten Floor:")
-        row.column().preset_prop("dome_flat", text="")
-
-        row = box.row()
-        row.column().label(text="Flatten Ceiling:")
-        row.column().preset_prop("dome_ceiling", text="")
-
-        row = box.row()
-        row.column().label(text="Spherize Dome:")
-        row.column().preset_prop("dome_sphere", text="")
-
-        box = layout.box()
-        row = box.row()
-        row.column().label(text="SHADOW CATCHER:")
-        row = box.row()
-        row.column().label(text="Floor Reflection:")
-        row.column().preset_prop("floor_reflection", text="")
-
-        row = box.row()
-        row.column().label(text="Floor Roughness:")
-        row.column().preset_prop("floor_roughness", text="")
-
-
 class TRANSHUMAN_PT_RIG(TranshumanPanel, bpy.types.Panel):
     bl_idname = "TRANSHUMAN_PT_RIG"
     bl_parent_id = "TRANSHUMAN_PT_MAIN"
@@ -7130,7 +7013,6 @@ classes = (
     TRANSHUMAN_OT_BIND_MESH,
     # Panels
     TRANSHUMAN_PT_MAIN,
-    TRANSHUMAN_PT_ENVIRONMENT_RENDER,
     TRANSHUMAN_PT_RIG,
     TRANSHUMAN_PT_EYES,
     TRANSHUMAN_PT_SKIN,

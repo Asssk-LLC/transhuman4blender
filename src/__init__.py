@@ -17,10 +17,10 @@ bl_info = {
 # from .addon_utils import get_addon_root
 if "bpy" in locals():
     import importlib
-    importlib.reload(addon_utils)
+    importlib.reload(sm5_addon_utils)
     importlib.reload(preset_saver)
 else:
-    from . import addon_utils
+    from . import sm5_addon_utils
     from . import preset_saver
 
 import bpy
@@ -1857,7 +1857,7 @@ presetSaver = preset_saver.PresetSaver(
             "total": 0.1,
         }
     ],
-    addon_utils.get_addon_root(addon_name)
+    sm5_addon_utils.get_addon_root(addon_name)
 )
 
 
@@ -4418,7 +4418,7 @@ class TRANSHUMAN_OT_LOAD_ORIGINAL_COLLECTION(Operator):
     bl_description = "Load Transhuman into this blender file"
 
     def execute(self, context):
-        path = addon_utils.get_addon_root(addon_name=addon_name) / 'assets' / 'SM5 Transhuman.blend'
+        path = sm5_addon_utils.get_addon_root(addon_name=addon_name) / 'assets' / 'SM5 Transhuman.blend'
         collection_name = 'Transhuman 4 Blender'
         with bpy.data.libraries.load(str(path.absolute())) as (data_from, data_to):
             data_to.collections.append(collection_name)

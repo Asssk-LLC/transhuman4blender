@@ -12,10 +12,7 @@ bl_info = {
     "category": "Development",
 }
 
-
 import bpy
-import random
-from functools import reduce
 
 from bpy.props import (
     PointerProperty,
@@ -26,147 +23,10 @@ from bpy.types import (
 )
 from bpy_extras.io_utils import ImportHelper
 
-import json
-import addon_utils
+from .addon_utils import get_addon_root
 from pathlib import Path
 
-class PresetSaver:
-    def __init__(self, props, ext_props, random_props, random_prop_groups=[]):
-        self.props = props
-        self.ext_props = ext_props
-        self.prefix = "Transhuman_PRESET_"
-        self.ext_prop_prefix = "_EXT_PROP_"
-        self.random_props = random_props
-        self.random_prop_groups = random_prop_groups
-
-    def get_preset_name(self, name):
-        return self.prefix + name
-
-    def save(self, context, name):
-        preset_name = self.get_preset_name(name)
-        values = {}
-        for prop in self.props:
-            values[prop] = getattr(context.scene.Transhuman_tool, prop, None)
-
-        for prop in self.ext_props:
-            ext = self.ext_props[prop]
-            serialize = lambda x: x
-            value = getattr(ext[0](), ext[1])
-
-            if type(value) is not str:
-                try:
-                    iterator = iter(value)
-                except TypeError:
-                    pass
-                else:
-                    serialize = lambda x: list(x)
-
-            if len(ext) > 2:
-                options = ext[2]
-                if "type" in options and options["type"] == "list":
-                    serialize = lambda x: list(x)
-            values[self.ext_prop_prefix + prop] = serialize(value)
-
-        if preset_name in bpy.data.texts:
-            f = bpy.data.texts[preset_name]
-            f.clear()
-        else:
-            f = bpy.data.texts.new(preset_name)
-        f.write(json.dumps(values))
-
-    def load(self, context, name):
-        preset_name = self.get_preset_name(name)
-        if preset_name not in bpy.data.texts:
-            raise Exception("Preset not found by key: " + name)
-
-        setattr(context.scene.Transhuman_tool, "preset_name", name)
-        loaded = json.loads(bpy.data.texts[preset_name].as_string())
-        self.setattrs(loaded, context)
-
-    def getattr(self, key, context):
-        obj = None
-        real_key = None
-        if key.startswith(self.ext_prop_prefix):
-            ext_prop_name = key[len(self.ext_prop_prefix) :]
-            ext = self.ext_props[ext_prop_name]
-            obj = ext[0]()
-            real_key = ext[1]
-        else:
-            obj = context.scene.Transhuman_tool
-            real_key = key
-
-        return obj[real_key]
-
-    def setattrs(self, key_values, context):
-        for key in key_values:
-            try:
-                if key.startswith(self.ext_prop_prefix):
-                    ext_prop_name = key[len(self.ext_prop_prefix) :]
-                    ext = self.ext_props[ext_prop_name]
-                    setattr(ext[0](), ext[1], key_values[key])
-                else:
-                    setattr(context.scene.Transhuman_tool, key, key_values[key])
-            except TypeError as e:
-                print(e)
-
-    def randomize(self, context, selective=False):
-        extremity = getattr(context.scene.Transhuman_tool, "random_extremity", None)
-        power = self.convert_extremity_to_power(extremity)
-        created = {}
-        for key in self.random_props:
-            min = self.random_props[key][0]
-            max = self.random_props[key][1]
-            if selective:
-                current = self.getattr(key, context)
-                if current == 0:
-                    created[key] = self.get_random_value(min, max, power)
-                else:
-                    created[
-                        key
-                    ] = current  # leave the current value so later created[key] won't throw
-            else:
-                created[key] = self.get_random_value(min, max, power)
-
-        # comply with the total of each groups
-        for group in self.random_prop_groups:
-            total = group["total"]
-            keys = group["keys"]
-            sum = reduce(lambda result, key: result + created[key], keys, 0)
-            if sum == 0:
-                [].count
-                value = total / len(keys)
-                for key in keys:
-                    created[key] = value
-            else:
-                multiply = total / sum
-                for key in keys:
-                    created[key] = created[key] * multiply
-
-        self.setattrs(created, context)
-
-    def convert_extremity_to_power(self, extremity):
-        return pow(10000, 0.5 - extremity)
-
-    def get_random_value(self, min, max, power):
-        base = random.uniform(0, 1)
-        sign = 1 if random.uniform(min, max) >= 0 else -1
-        value = pow(base, power) * sign * max
-        return value
-
-    def randomize_from_preset(self, context, name):
-        self.load(context, name)
-        self.randomize(context, selective=True)
-
-    def get_saved_presets(self, context):
-        return [
-            text[len(self.prefix) :]
-            for text in bpy.data.texts.keys()
-            if text.startswith(self.prefix)
-        ]
-
-    def get_ext_prop(self, name):
-        return self.ext_props[name]
-
+from .preset_saver import PresetSaver
 
 presetSaver = PresetSaver(
     [
@@ -1989,6 +1849,7 @@ presetSaver = PresetSaver(
             "total": 0.1,
         }
     ],
+    addon_name
 )
 
 
@@ -4527,14 +4388,14 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
 
     saved_presets: bpy.props.EnumProperty(
         items=lambda self, context: [
-            (v, v, v) for v in presetSaver.get_saved_presets(context)
+            (v, v, v) for v in presetSaver.get_saved_presets()
         ],
         description="Saved Presets",
     )
 
     randomize_from_preset: bpy.props.EnumProperty(
         items=lambda self, context: [
-            (v, v, v) for v in presetSaver.get_saved_presets(context)
+            (v, v, v) for v in presetSaver.get_saved_presets()
         ],
         description="Base preset for selective (targets only value=0) randomizer",
     )
@@ -4549,17 +4410,13 @@ class TRANSHUMAN_OT_LOAD_ORIGINAL_COLLECTION(Operator):
     bl_description = "Load Transhuman into this blender file"
 
     def execute(self, context):
-        for mod in addon_utils.modules():
-            name = mod.bl_info.get("name")
-            if name == addon_name:
-                path = Path(mod.__file__).parent / 'assets' / 'SM5 Transhuman.blend'
-                collection_name = 'Transhuman 4 Blender'
-                with bpy.data.libraries.load(str(path.absolute())) as (data_from, data_to):
-                    data_to.collections.append(collection_name)
-                
-                collection = bpy.data.collections.get(collection_name)
-                print(collection)
-                bpy.context.scene.collection.children.link(collection)
+        path = get_addon_root(addon_name=addon_name) / 'assets' / 'SM5 Transhuman.blend'
+        collection_name = 'Transhuman 4 Blender'
+        with bpy.data.libraries.load(str(path.absolute())) as (data_from, data_to):
+            data_to.collections.append(collection_name)
+
+        collection = bpy.data.collections.get(collection_name)
+        bpy.context.scene.collection.children.link(collection)
 
         return {"FINISHED"}
 

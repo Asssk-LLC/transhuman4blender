@@ -12,9 +12,6 @@ bl_info = {
     "category": "Development",
 }
 
-
-# from .preset_saver import PresetSaver
-# from .addon_utils import get_addon_root
 if "bpy" in locals():
     import importlib
     importlib.reload(sm5_addon_utils)
@@ -644,10 +641,14 @@ presetSaver = preset_saver.PresetSaver(
         "ear_pointy": [-1, 1],
     },
     [
-        { "keys": [     "fem_face_1", "fem_face_2", "fem_face_3", "fem_face_4", "fem_face_5", "m_face_1", "m_face_2", "m_face_3", "m_face_4", "m_face_5", ], "total": 0.1,
+        {
+            "keys": [
+                "fem_face_1" , "fem_face_2" , "fem_face_3" , "fem_face_4" , "fem_face_5" , "m_face_1" , "m_face_2" , "m_face_3" , "m_face_4" , "m_face_5"
+            ],
+            "total": 0.1,
         }
     ],
-    sm5_addon_utils.get_addon_root(addon_name)
+    sm5_addon_utils.get_addon_root(addon_name),
 )
 #fmt: on
 

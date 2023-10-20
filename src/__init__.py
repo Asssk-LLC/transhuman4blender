@@ -12,6 +12,17 @@ bl_info = {
     "category": "Development",
 }
 
+
+# from .preset_saver import PresetSaver
+# from .addon_utils import get_addon_root
+if "bpy" in locals():
+    import importlib
+    importlib.reload(addon_utils)
+    importlib.reload(preset_saver)
+else:
+    from . import addon_utils
+    from . import preset_saver
+
 import bpy
 
 from bpy.props import (
@@ -23,12 +34,9 @@ from bpy.types import (
 )
 from bpy_extras.io_utils import ImportHelper
 
-from .addon_utils import get_addon_root
 from pathlib import Path
 
-from .preset_saver import PresetSaver
-
-presetSaver = PresetSaver(
+presetSaver = preset_saver.PresetSaver(
     [
         # list of names of the props to save.
         "body_hair_image",
@@ -1849,7 +1857,7 @@ presetSaver = PresetSaver(
             "total": 0.1,
         }
     ],
-    addon_name
+    addon_utils.get_addon_root(addon_name)
 )
 
 
@@ -4410,7 +4418,7 @@ class TRANSHUMAN_OT_LOAD_ORIGINAL_COLLECTION(Operator):
     bl_description = "Load Transhuman into this blender file"
 
     def execute(self, context):
-        path = get_addon_root(addon_name=addon_name) / 'assets' / 'SM5 Transhuman.blend'
+        path = addon_utils.get_addon_root(addon_name=addon_name) / 'assets' / 'SM5 Transhuman.blend'
         collection_name = 'Transhuman 4 Blender'
         with bpy.data.libraries.load(str(path.absolute())) as (data_from, data_to):
             data_to.collections.append(collection_name)

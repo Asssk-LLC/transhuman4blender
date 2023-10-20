@@ -2,10 +2,9 @@ import json
 import random
 from functools import reduce
 import os
-from .addon_utils import get_addon_root
 
 class PresetSaver:
-    def __init__(self, props, ext_props, random_props, random_prop_groups, addon_name):
+    def __init__(self, props, ext_props, random_props, random_prop_groups, addon_root):
         self.props = props
         self.ext_props = ext_props
         self.prefix = "Transhuman_PRESET_"
@@ -13,7 +12,7 @@ class PresetSaver:
         self.ext_prop_prefix = "_EXT_PROP_"
         self.random_props = random_props
         self.random_prop_groups = random_prop_groups
-        self.addon_name = addon_name
+        self.addon_root = addon_root
 
     def get_preset_name(self, name):
         return self.prefix + name + self.prefix_ext
@@ -140,7 +139,7 @@ class PresetSaver:
         ]
     
     def get_presets_path(self):
-        preset_path = get_addon_root(addon_name=self.addon_name) / "presets"
+        preset_path = self.addon_root / "presets"
         return preset_path
 
     def get_ext_prop(self, name):

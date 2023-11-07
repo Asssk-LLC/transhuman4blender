@@ -307,7 +307,6 @@ presetSaver = preset_saver.PresetSaver(
         "interpolate_root_mesh": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["interpolate_root_mesh"].inputs[1],"default_value",],
         "interpolate_mesh_amount": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["interpolate_mesh_amount"],"integer",],
         "persona_displ_value": [lambda:bpy.data.node_groups["SM5 Body Displacement"].nodes["persona_displ_value"].outputs[0],"default_value",],
-        
         "body_hair_spread":  [ lambda: bpy.data.node_groups["SM5 Body Hair Transhuman" ].nodes["body_hair_spread" ].outputs[0], "default_value", ],
         "body_hair_length":  [ lambda: bpy.data.node_groups["SM5 Body Hair Transhuman" ].nodes["body_hair_length" ].inputs[3], "default_value", ],
         "body_hair_clump":  [ lambda: bpy.data.node_groups["SM5 Body Hair Transhuman" ].nodes["hair_clump" ].inputs[0], "default_value", ],
@@ -568,12 +567,6 @@ presetSaver = preset_saver.PresetSaver(
         "jaw_width": [-1, 1],
         "jaw_length": [-1, 1],
         "neck_girth": [-1, 1],
-        #    'feet_male': [0, 1],
-        #    'feet_female': [0, 1],
-        #    'hand_male': [0, 1],
-        #    'hand_female': [0, 1],
-        #    'hand_neutral': [0, 1],
-        #    'hand_elder': [0, 1],
         "eye_grow": [0, 1],
         "eye_shrink": [0, 1],
         "eye_inward": [0, 1],
@@ -3377,9 +3370,6 @@ class TRANSHUMAN_PT_MAIN(TranshumanPanel, bpy.types.Panel):
 
         box = layout.box()
         row = box.row()
-#        row.column().label(
-#            text="REMINDERS:",
-#        )
         row = box.row()
         row.column().label(
             text="Bind 'POSE SMOOTH' in T-Pose before render", icon="INFO"
@@ -3397,81 +3387,10 @@ class TRANSHUMAN_PT_MAIN(TranshumanPanel, bpy.types.Panel):
         row.column().label(icon="BLANK1")
         row = box.row()
 
-
-class TRANSHUMAN_PT_ENVIRONMENT_RENDER(TranshumanPanel, bpy.types.Panel):
-    bl_idname = "TRANSHUMAN_PT_ENVIRONMENT_RENDER"
-    bl_parent_id = "TRANSHUMAN_PT_MAIN"
-    bl_label = "ENVIRONMENT DOME"
-
-    def draw(self, context):
-        layout = self.layout
-
-        box = layout.box()
-        row = box.row()
-        row.column().preset_prop("color_amount", text="Colorize Environment")
-        row.column().preset_prop("environment_color", text="")
-
-        row = box.row()
-        row.column().preset_prop("light_intensity", text="Light Intensity")
-        add_open_set_image(
-            row.column(),
-            material="SM5 Environment Dome Material",
-            node="environment_image",
-            group="dome_group",
-        )
-
-        box = layout.box()
-        row = box.row()
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        op = row.column().operator(
-            "wm.url_open", text="Get more Environment Domes", icon="URL"
-        )
-        op.url = "https://sm5.heledahn.com/collections/hdri-images"
-        row.column().label(icon="BLANK1")
-        row = box.row()
-
-        box = layout.box()
-        row = box.row()
-        row.column().preset_prop("dome_mapping", text="World Rotation")
-
-        box = layout.box()
-        row = box.row()
-        row.column().preset_prop("dome_scale", text="World Scale")
-
-        box = layout.box()
-        row = box.row()
-        row.column().preset_prop("dome_location", text="World Position")
-
-        box = layout.box()
-        row = box.row()
-        row.column().label(text="Flatten Floor:")
-        row.column().preset_prop("dome_flat", text="")
-
-        row = box.row()
-        row.column().label(text="Flatten Ceiling:")
-        row.column().preset_prop("dome_ceiling", text="")
-
-        row = box.row()
-        row.column().label(text="Spherize Dome:")
-        row.column().preset_prop("dome_sphere", text="")
-
-        box = layout.box()
-        row = box.row()
-        row.column().label(text="SHADOW CATCHER:")
-        row = box.row()
-        row.column().label(text="Floor Reflection:")
-        row.column().preset_prop("floor_reflection", text="")
-
-        row = box.row()
-        row.column().label(text="Floor Roughness:")
-        row.column().preset_prop("floor_roughness", text="")
-
-
 class TRANSHUMAN_PT_RIG(TranshumanPanel, bpy.types.Panel):
     bl_idname = "TRANSHUMAN_PT_RIG"
     bl_parent_id = "TRANSHUMAN_PT_MAIN"
-    bl_label = "ARMATURES"
+    bl_label = "ARMATURES & DYNAMIC MODIFIERS"
 
     def draw(self, context):
         layout = self.layout
@@ -3513,7 +3432,7 @@ class TRANSHUMAN_PT_RIG(TranshumanPanel, bpy.types.Panel):
         row = box.row()
         row.column().label(icon="BLANK1")
         row.column().label(
-            text="Cloth modifier. Turn on at 'Frame 1' only, to avoid scares",
+            text="Cloth modifier for breast motion. To avoid scares, turn on at 'Frame 1' only!",
             icon="INFO",
         )
         
@@ -4938,247 +4857,6 @@ class TRANSHUMAN_PT_WIG(TranshumanPanel, bpy.types.Panel):
         row.column().label(text="Highlights Spread:")
         row.column().preset_prop("secondary_intensity_1", text="")
         row = box.row()
-        
-        box = layout.box()
-        row = box.row()
-        row.column().label(text="HAIR APEARANCE (BASIC):", icon="OPTIONS")
-        
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("hair_mesh_curve", text="Curves to Mesh")
-        
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("hair_spread", text="Spread Radius")
-        
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("root_puff", text="Puff Root")
-        
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("hair_clump_switch", text="Clump")
-        row.column().preset_prop("hair_clump_shape", text="Shape")
-        
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("hair_random_length", text="Random length")
-        
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("hair_resolution", text="Global Resolution")
-        row = box.row()
-        
-        
-        box = layout.box()
-
-        row = box.row()
-        row.column().label(text="CURLS & WAVES:", icon="OPTIONS")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("hair_curls_switch", text="Curls On / Off")
-        row.column().preset_prop("curl_clump_mode", text="Gravity")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("gravity_clump", text="Gravity Shape")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("curl_amplitude", text="Amplitude")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("curl_frequency", text="Frequency")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("curls_randomize", text="Randomize Direction")
-        row.column().preset_prop("waves_curls_switch", text="Waves")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("curl_scale", text="Curl Scale Adjust")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("curl_resolution", text="Curl Resolution")
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().label(text="Global Resolution takes priority", icon="INFO")
-
-        box = layout.box()
-
-        row = box.row()
-        row.column().label(text="LOOSE HAIRS:", icon="OPTIONS")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("loose_hair_decimate", text="Loose Hairs Probability")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("loose_hair_amount", text="Amount")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("loose_hair_spread", text="Spread")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("loose_hairs_frizz", text="Frizz")
-        row = box.row()
-
-
-class TRANSHUMAN_PT_WIG_CURVES(TranshumanPanel, bpy.types.Panel):
-    bl_idname = "TRANSHUMAN_PT_WIG_CURVES"
-    bl_parent_id = "TRANSHUMAN_PT_WIG"
-    bl_label = "  Advanced Options (Curves)  ▼"
-
-    def draw(self, context):
-        layout = self.layout
-
-        box = layout.box()
-        row = box.row()
-        row.column().label(text="Hair Appearance (CURVES):", icon="OUTLINER_OB_CURVES")
-        
-        row = box.row()
-        row.column().label(text="HAIR LOOK:", icon="OPTIONS")
-    
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("hair_amount", text="Hairs Amount")
-        
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("curves_hair_thickness", text="Hairs Thickness")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("fluff_strands", text="Fluff Strands")
-
-        row = box.row()
-        
-        box = layout.box()
-        row = box.row()
-        row = box.row()
-        row.column().label(text="HAIR FRIZZ:", icon="OPTIONS")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("noise_strength", text="Noise Strength")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("noise_scale", text="Noise Density")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("noise_shape", text="Noise Shape")
-        row = box.row()
-
-
-class TRANSHUMAN_PT_WIG_MESH(TranshumanPanel, bpy.types.Panel):
-    bl_idname = "TRANSHUMAN_PT_WIG_MESH"
-    bl_parent_id = "TRANSHUMAN_PT_WIG"
-    bl_label = "  Advanced Options (Mesh)  ▼"
-
-    def draw(self, context):
-        layout = self.layout
-
-        box = layout.box()
-
-        row = box.row()
-        row.column().label(text="Hair Appearance (MESH):", icon="MESH_DATA")
-
-        row = box.row()
-        row.column().label(text="CURLS & WAVES:", icon="OPTIONS")
-        
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("mesh_tubes_cards", text="Tubes to Cards")
-        
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("feigned_uv_curls", text="Feign Curls from UV")
-        row.column().label(text="(Only for Tubes. Incompatible with TYPES)")
-        
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("tubes_amplitude", text="Tubes Curl Amplitude")
-        
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("inherit_curve_curls", text="Inherit Curls From Curves")
-        
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("random_direction_mesh", text="Random Direction")
-        
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("mesh_loose_hairs", text="Loose Hairs")
-        row.column().preset_prop("mesh_loose_resample", text="Resolution")
-        
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("hair_type_mesh", text="Hair Type")
-        
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().label(text="TYPES:", icon="INFO")
-        
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().label(text="0 - Straight")
-        row.column().label(text="1 - Messy")
-        row.column().label(text="2 - Soft Waves")
-        row.column().label(text="3 - Wavy")
-        
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().label(text="4 - Zig-Zag")
-        row.column().label(text="5 - Curls")
-        row.column().label(text="6 - Frizzy")
-        row.column().label(text="7 - Coils")
-        row = box.row()
-        
-        box = layout.box()
-        row = box.row()
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("interpolate_root_mesh", text="Fix bald spots (Center-Top)")
-        row.column().preset_prop("interpolate_mesh_amount", text="Amount")
-        row = box.row()
-        
-        
-        box = layout.box()
-        row = box.row()
-        row.column().label(text="MATERIAL:", icon="OPTIONS")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("mesh_hair_metallic", text="Metallic")
-        row.column().preset_prop("mesh_hair_specular", text="Specular")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("mesh_hair_roughness", text="Roughness")
-        row.column().preset_prop("mesh_hair_ior", text="IOR")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("mesh_hair_clearcoat", text="Clearcoat")
-        row.column().preset_prop(
-            "mesh_hair_clearcoat_roughness", text="Clearcoat Roughness"
-        )
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().preset_prop("mesh_translucent", text="Translucency")
-        row.column().preset_prop("mesh_thickness", text="Hair thickness")
-        row = box.row()
 
 
 class TRANSHUMAN_PT_BODY_HAIR(TranshumanPanel, bpy.types.Panel):
@@ -5389,7 +5067,7 @@ class TRANSHUMAN_PT_BEARD(TranshumanPanel, bpy.types.Panel):
 
         row = box.row()
         row.column().label(icon="BLANK1")
-        row.column().label(text="Trim:")
+        row.column().label(text="Length:")
         row.column().preset_prop("stubble_length", text="")
 
         row = box.row()
@@ -5777,7 +5455,7 @@ class TRANSHUMAN_PT_UNDERWEAR(TranshumanPanel, bpy.types.Panel):
         
         row = box.row()
         row.column().label(
-            text="• Adds animation to adjust imported clothes to custom body (frames 1-40)",
+            text="• Adds animation to adjust ZERO clothes to custom body (frames 1-40)",
             icon="INFO",)
         row = box.row()
         row.column().label(
@@ -5921,7 +5599,6 @@ classes = (
     TRANSHUMAN_OT_BIND_MESH,
     # Panels
     TRANSHUMAN_PT_MAIN,
-    TRANSHUMAN_PT_ENVIRONMENT_RENDER,
     TRANSHUMAN_PT_RIG,
     TRANSHUMAN_PT_EYES,
     TRANSHUMAN_PT_SKIN,
@@ -5956,8 +5633,6 @@ classes = (
     TRANSHUMAN_PT_MAKEUP_EYEBROWS,
     TRANSHUMAN_PT_MAKEUP_NAILS,
     TRANSHUMAN_PT_WIG,
-    TRANSHUMAN_PT_WIG_CURVES,
-    TRANSHUMAN_PT_WIG_MESH,
     TRANSHUMAN_PT_BODY_HAIR,
     TRANSHUMAN_PT_EYEBROWS_HAIR,
     TRANSHUMAN_PT_EYELASHES_HAIR,

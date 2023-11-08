@@ -64,6 +64,10 @@ class PresetSaver:
         real_key = None
         if key.startswith(self.ext_prop_prefix):
             ext_prop_name = key[len(self.ext_prop_prefix) :]
+            if ext_prop_name not in self.ext_props:
+                print('ext prop not found: ' + ext_prop_name)
+                return 0
+
             ext = self.ext_props[ext_prop_name]
             obj = ext[0]()
             real_key = ext[1]
@@ -83,6 +87,8 @@ class PresetSaver:
                 else:
                     setattr(context.scene.Transhuman_tool, key, key_values[key])
             except TypeError as e:
+                print(e)
+            except KeyError as e:
                 print(e)
 
     def randomize(self, context, randomize_mode='Standard'):

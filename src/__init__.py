@@ -3249,12 +3249,15 @@ class TRANSHUMAN_OT_UNBIND_MESH(TRANSHUMAN_OT_CONFIRM):
 # ------------------------------------------------------------------------
 #    Panel in Object Mode
 # ------------------------------------------------------------------------
-class TranshumanPanel:
+class TranshumanRootPanel:
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "Transhuman"
 
-class TRANSHUMAN_PT_INIT(TranshumanPanel, bpy.types.Panel):
+class TranshumanPanel(TranshumanRootPanel):
+    bl_options = {"DEFAULT_CLOSED"}
+
+class TRANSHUMAN_PT_INIT(TranshumanRootPanel, bpy.types.Panel):
     bl_idname = "TRANSHUMAN_PT_INIT"
     bl_label = "Transhuman4Blender"
 
@@ -3270,7 +3273,7 @@ class TRANSHUMAN_PT_INIT(TranshumanPanel, bpy.types.Panel):
             "transhuman_operators.load_original_collection", text="Load Transhuman", icon="IMPORT"
         )
 
-class TRANSHUMAN_PT_MAIN(TranshumanPanel, bpy.types.Panel):
+class TRANSHUMAN_PT_MAIN(TranshumanRootPanel, bpy.types.Panel):
     bl_idname = "TRANSHUMAN_PT_MAIN"
     bl_label = "Transhuman4Blender"
 

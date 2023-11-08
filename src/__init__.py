@@ -3220,12 +3220,13 @@ class TRANSHUMAN_OT_BIND_MESH(TRANSHUMAN_OT_CONFIRM):
     bl_description = "Bind"
 
     def execute(self, context):
-        bpy.context.object.modifiers["--Nipples fix"].show_viewport = True
-        bpy.context.object.modifiers["--Nipples fix"].show_render = True
+        bpy.data.objects["SM5 Transhuman"].modifiers["--Nipples fix"].show_viewport = True
+        bpy.data.objects["SM5 Transhuman"].modifiers["--Nipples fix"].show_render = True
         bpy.ops.object.correctivesmooth_bind(modifier="--Nipples fix")
-        bpy.context.object.modifiers["POSE SMOOTH"].show_viewport = True
-        bpy.context.object.modifiers["POSE SMOOTH"].show_render = True
+        bpy.data.objects["SM5 Transhuman"].modifiers["POSE SMOOTH"].show_viewport = True
+        bpy.data.objects["SM5 Transhuman"].modifiers["POSE SMOOTH"].show_render = True
         bpy.ops.object.correctivesmooth_bind(modifier="POSE SMOOTH")
+        setattr(context.scene.Transhuman_tool, "is_bound", True)
 
         return {"FINISHED"}
 
@@ -3236,11 +3237,12 @@ class TRANSHUMAN_OT_UNBIND_MESH(TRANSHUMAN_OT_CONFIRM):
 
     def execute(self, context):
         bpy.ops.object.correctivesmooth_bind(modifier="--Nipples fix")
-        bpy.context.object.modifiers["--Nipples fix"].show_viewport = False
-        bpy.context.object.modifiers["--Nipples fix"].show_render = False
+        bpy.data.objects["SM5 Transhuman"].modifiers["--Nipples fix"].show_viewport = False
+        bpy.data.objects["SM5 Transhuman"].modifiers["--Nipples fix"].show_render = False
         bpy.ops.object.correctivesmooth_bind(modifier="POSE SMOOTH")
-        bpy.context.object.modifiers["POSE SMOOTH"].show_viewport = False
-        bpy.context.object.modifiers["POSE SMOOTH"].show_render = False
+        bpy.data.objects["SM5 Transhuman"].modifiers["POSE SMOOTH"].show_viewport = False
+        bpy.data.objects["SM5 Transhuman"].modifiers["POSE SMOOTH"].show_render = False
+        setattr(context.scene.Transhuman_tool, "is_bound", False)
         
         return {"FINISHED"}
 

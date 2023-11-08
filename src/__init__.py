@@ -1,7 +1,7 @@
 addon_name = 'Transhuman4Blender'
 
 bl_info = {
-    "name": 'SM5 Transhuman4Blender',
+    "name": 'Transhuman4Blender',
     "description": "Character generator for Blender",
     "author": "SM5 by Heledahn",
     "version": (0, 0, 1),
@@ -284,6 +284,7 @@ presetSaver = preset_saver.PresetSaver(
         "hide_hair_wig",
         "hide_render_hair_wig",
         "dynamic_breasts",
+        "dynamic_wrinkles",
     ],
     {
         "smooth_custom":  [ lambda: bpy.data.objects["SM5 Rest Pose Transhuman"].modifiers[ "Smooth Custom"], "iterations", ],
@@ -748,6 +749,17 @@ def create_node_group_select(
         ),
     )
 
+def set_subdivision_level_value(level_value):
+    bpy.data.objects["SM5 Transhuman"].modifiers["Subdivision"].levels = level_value
+    bpy.data.objects["SM5 Tears Transhuman"].modifiers["Subdivision"].levels = level_value
+    levels = ['LV0', 'LV1', 'LV2', 'LV3']
+    for level in levels:
+        bpy.context.object.modifiers[level].show_viewport = False
+        bpy.context.object.modifiers[level].show_render = False
+
+    bpy.context.object.modifiers[levels[level_value]].show_viewport = True
+    bpy.context.object.modifiers[levels[level_value]].show_render = True
+
 def set_face_rig_switch_value(self, context):
     bpy.data.objects[
         "SM5 Face Armature Transhuman"
@@ -884,7 +896,7 @@ def set_clothes_adjust_switch_value(self, context):
     ].mute = not self.clothes_adjust_switch
 
 def set_hide_armatures_value(self, context):
-    bpy.data.collections["Transhuman - RIGS"].hide_viewport = self.hide_armature
+    bpy.data.collections["Transhuman - RIGS"].hide_viewport = self.hide_armatures
 
 def set_hide_body_hairs_value(self, context):
     bpy.data.collections["Transhuman - BODY HAIR"].hide_viewport = self.hide_body_hairs
@@ -901,6 +913,10 @@ def set_hide_render_hair_wig_value(self, context):
 def set_dynamic_breasts_value(self, context):
     bpy.data.objects["SM5 Transhuman"].modifiers["Dynamic Breasts"].show_viewport = self.dynamic_breasts
     bpy.data.objects["SM5 Transhuman"].modifiers["Dynamic Breasts"].show_render = self.dynamic_breasts
+
+def set_dynamic_wrinkles_value(self, context):
+    bpy.data.objects["SM5 Transhuman"].modifiers["Dynamic Wrinkles"].show_viewport = self.dynamic_wrinkles
+    bpy.data.objects["SM5 Transhuman"].modifiers["Dynamic Wrinkles"].show_render = self.dynamic_wrinkles
 
 def set_eyelashes_clump_switch_value(self, context):
     bpy.data.node_groups["SM5 Top Eyelashes Transhuman"].nodes[
@@ -1326,6 +1342,13 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         "dynamic_breasts",
         [],
         update=lambda self, context: set_dynamic_breasts_value(self, context),
+        bool=True,
+    )
+
+    dynamic_wrinkles: create_linked_props(
+        "dynamic_wrinkles",
+        [],
+        update=lambda self, context: set_dynamic_wrinkles_value(self, context),
         bool=True,
     )
 
@@ -3163,15 +3186,33 @@ class TRANSHUMAN_OT_RANDOMIZE_FROM_PRESET(TRANSHUMAN_OT_CONFIRM):
     
 class TRANSHUMAN_OT_BIND_MESH(TRANSHUMAN_OT_CONFIRM):
     bl_idname = "transhuman_operators.bind_mesh"
-    bl_label = "This will bind/unbind the mesh to/from its current state"
+    bl_label = "This will enable/bind the mesh to its current state"
     bl_description = "Bind"
 
     def execute(self, context):
+        bpy.context.object.modifiers["--Nipples fix"].show_viewport = True
+        bpy.context.object.modifiers["--Nipples fix"].show_render = True
         bpy.ops.object.correctivesmooth_bind(modifier="--Nipples fix")
+        bpy.context.object.modifiers["POSE SMOOTH"].show_viewport = True
+        bpy.context.object.modifiers["POSE SMOOTH"].show_render = True
         bpy.ops.object.correctivesmooth_bind(modifier="POSE SMOOTH")
 
         return {"FINISHED"}
 
+class TRANSHUMAN_OT_UNBIND_MESH(TRANSHUMAN_OT_CONFIRM):
+    bl_idname = "transhuman_operators.unbind_mesh"
+    bl_label = "This will disable/unbind the mesh from its current state"
+    bl_description = "Unbind"
+
+    def execute(self, context):
+        bpy.ops.object.correctivesmooth_bind(modifier="--Nipples fix")
+        bpy.context.object.modifiers["--Nipples fix"].show_viewport = False
+        bpy.context.object.modifiers["--Nipples fix"].show_render = False
+        bpy.ops.object.correctivesmooth_bind(modifier="POSE SMOOTH")
+        bpy.context.object.modifiers["POSE SMOOTH"].show_viewport = False
+        bpy.context.object.modifiers["POSE SMOOTH"].show_render = False
+        
+        return {"FINISHED"}
 
 # ------------------------------------------------------------------------
 #    Panel in Object Mode
@@ -3184,15 +3225,13 @@ class TranshumanPanel:
 
 class TRANSHUMAN_PT_MAIN(TranshumanPanel, bpy.types.Panel):
     bl_idname = "TRANSHUMAN_PT_MAIN"
-    bl_label = "TRANSHUMAN4BLENDER"
+    bl_label = "Transhuman4Blender"
 
     def draw(self, context):
         layout = self.layout
 
         box = layout.box()
         row = box.row()
-        print('TRANSHUMAN_PT_MAIN')
-        print(bpy.data.collections.keys())
         row.column().operator(
             "transhuman_operators.load_original_collection", text="Load Transhuman", icon="APPEND_BLEND"
         )
@@ -3209,58 +3248,10 @@ class TRANSHUMAN_PT_MAIN(TranshumanPanel, bpy.types.Panel):
             "transhuman_operators.load_preset", text="LOAD", icon="FILE"
         )
 
-        box = layout.box()
-        row = box.row()
-        row.column().prop(
-            context.scene.Transhuman_tool,
-            "random_extremity",
-            slider=True,
-            text="< Harmony / Chaos >",
-        )
-        row.column().operator(
-            "transhuman_operators.randomize_preset",
-            text="Randomize",
-        )
-        row = box.row()
-        row.column().prop(
-            context.scene.Transhuman_tool, "randomize_from_preset", text=""
-        )
-        row.column().operator(
-            "transhuman_operators.randomize_from_preset",
-            text="Randomize Preset",
-        )        
-
-        box = layout.box()
-        row = box.row()
-        row.column().preset_prop(
-            "smooth_custom", text="Smooth Anatomy & Facial Features"
-        )
-
-        box = layout.box()
-        row = box.row()
-        row = box.row()
-        
-        row.column().label(
-            text="Bind 'POSE SMOOTH' in T-Pose before render", icon="INFO"
-        )
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().label(
-            text="Unbind before modifying appearance", icon="BLANK1"
-        )
-        
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        op = row.column().operator(
-            "transhuman_operators.bind_mesh", text="BIND / UNBIND",
-        )
-        row.column().label(icon="BLANK1")
-        row = box.row()
-
 class TRANSHUMAN_PT_RIG(TranshumanPanel, bpy.types.Panel):
     bl_idname = "TRANSHUMAN_PT_RIG"
     bl_parent_id = "TRANSHUMAN_PT_MAIN"
-    bl_label = "ARMATURES & DYNAMIC MODIFIERS"
+    bl_label = "ARMATURES"
 
     def draw(self, context):
         layout = self.layout
@@ -3292,20 +3283,7 @@ class TRANSHUMAN_PT_RIG(TranshumanPanel, bpy.types.Panel):
         row.column().label(
             text="Choose 'Eyes' and deactivate 'Face' when using mocap data",
             icon="INFO",
-        )
-        
-        box = layout.box()
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().prop(context.scene.Transhuman_tool, "dynamic_breasts", text="Dynamic Breasts")
-        
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().label(
-            text="Cloth modifier for breast motion. To avoid scares, turn on at 'Frame 1' only!",
-            icon="INFO",
-        )
-        
+        )     
 
 class TRANSHUMAN_PT_EYES(TranshumanPanel, bpy.types.Panel):
     bl_idname = "TRANSHUMAN_PT_EYES"
@@ -3415,7 +3393,6 @@ class TRANSHUMAN_PT_EYES(TranshumanPanel, bpy.types.Panel):
 
         # layout.row().separator()
 
-
 class TRANSHUMAN_PT_SKIN(TranshumanPanel, bpy.types.Panel):
     bl_idname = "TRANSHUMAN_PT_SKIN"
     bl_parent_id = "TRANSHUMAN_PT_MAIN"
@@ -3517,14 +3494,12 @@ class TRANSHUMAN_PT_SKIN(TranshumanPanel, bpy.types.Panel):
         row.column().label(icon="BLANK1")
         row = box.row()
 
-
 class TRANSHUMAN_PT_FACE(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_MAIN"
     bl_label = "APPEARANCE - FACE"
 
     def draw(self, context):
         layout = self.layout
-
 
 class TRANSHUMAN_PT_HEAD_SHAPE(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_FACE"
@@ -3557,7 +3532,6 @@ class TRANSHUMAN_PT_HEAD_SHAPE(TranshumanPanel, bpy.types.Panel):
         row = box.row()
         row.column().prop(context.scene.Transhuman_tool, "fem_face_5", text="Face 5")
         row.column().prop(context.scene.Transhuman_tool, "m_face_5", text="Face 5")
-
 
 class TRANSHUMAN_PT_FACE_SHAPE(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_FACE"
@@ -3612,7 +3586,6 @@ class TRANSHUMAN_PT_FACE_SHAPE(TranshumanPanel, bpy.types.Panel):
             context.scene.Transhuman_tool, "head_width", text="Head Width ±"
         )
 
-
 class TRANSHUMAN_PT_CHEEKS_SHAPE(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_FACE"
     bl_label = "Cheeks"
@@ -3627,7 +3600,6 @@ class TRANSHUMAN_PT_CHEEKS_SHAPE(TranshumanPanel, bpy.types.Panel):
             text="Outward / Inward ±",
         )
         row.column().prop(context.scene.Transhuman_tool, "cheeks_hollow", text="Hollow")
-
 
 class TRANSHUMAN_PT_CHIN_SHAPE(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_FACE"
@@ -3656,7 +3628,6 @@ class TRANSHUMAN_PT_CHIN_SHAPE(TranshumanPanel, bpy.types.Panel):
         )
         row.column().label(text="")
 
-
 class TRANSHUMAN_PT_JAW_SHAPE(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_FACE"
     bl_label = "Jaw"
@@ -3668,7 +3639,6 @@ class TRANSHUMAN_PT_JAW_SHAPE(TranshumanPanel, bpy.types.Panel):
         row.column().prop(context.scene.Transhuman_tool, "jaw_width", text="Width ±")
         row.column().prop(context.scene.Transhuman_tool, "jaw_length", text="Length ±")
 
-
 class TRANSHUMAN_PT_NECK_SHAPE(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_FACE"
     bl_label = "Neck"
@@ -3679,7 +3649,6 @@ class TRANSHUMAN_PT_NECK_SHAPE(TranshumanPanel, bpy.types.Panel):
         row = layout.row()
         row.column().prop(context.scene.Transhuman_tool, "neck_girth", text="Girth ±")
         row.column().prop(context.scene.Transhuman_tool, "jowl", text="Jowl ±")
-
 
 class TRANSHUMAN_PT_EYE_SHAPE(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_FACE"
@@ -3741,9 +3710,6 @@ class TRANSHUMAN_PT_EYE_SHAPE(TranshumanPanel, bpy.types.Panel):
         row.column().prop(
             context.scene.Transhuman_tool, "eyeball_depth", text="Eyeball Depth ±"
         )
-        
-        
-
 
 class TRANSHUMAN_PT_BROW_SHAPE(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_FACE"
@@ -3775,7 +3741,6 @@ class TRANSHUMAN_PT_BROW_SHAPE(TranshumanPanel, bpy.types.Panel):
             context.scene.Transhuman_tool, "eyebrows_dist", text="Closenes ±"
         )
         row.column().label(text="")
-
 
 class TRANSHUMAN_PT_NOSE_SHAPE(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_FACE"
@@ -3856,7 +3821,6 @@ class TRANSHUMAN_PT_NOSE_SHAPE(TranshumanPanel, bpy.types.Panel):
         row.column().label(text="Nose height:")
         row.column().prop(context.scene.Transhuman_tool, "nose_height", text="±")
 
-
 class TRANSHUMAN_PT_MOUTH_SHAPE(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_FACE"
     bl_label = "Lips"
@@ -3934,7 +3898,6 @@ class TRANSHUMAN_PT_MOUTH_SHAPE(TranshumanPanel, bpy.types.Panel):
         row.column().label(text="Philtrum Width:")
         row.column().prop(context.scene.Transhuman_tool, "philtrum", text="±")
 
-
 class TRANSHUMAN_PT_EAR_SHAPE(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_FACE"
     bl_label = "Ears"
@@ -3961,7 +3924,6 @@ class TRANSHUMAN_PT_EAR_SHAPE(TranshumanPanel, bpy.types.Panel):
         row = layout.row()
         row.column().prop(context.scene.Transhuman_tool, "ear_pointy", text="Pointy")
         row.column().label(text="")
-
 
 class TRANSHUMAN_PT_BODY(TranshumanPanel, bpy.types.Panel):
     bl_idname = "TRANSHUMAN_PT_BODY"
@@ -4072,7 +4034,6 @@ class TRANSHUMAN_PT_BODY(TranshumanPanel, bpy.types.Panel):
         row.column().prop(context.scene.Transhuman_tool, "feet_male", text="Masculine")
         row.column().prop(context.scene.Transhuman_tool, "feet_female", text="Femenine")
 
-
 class TRANSHUMAN_PT_BODY_OPT(TranshumanPanel, bpy.types.Panel):
     bl_idname = "TRANSHUMAN_PT_BODY_OPT"
     bl_parent_id = "TRANSHUMAN_PT_BODY"
@@ -4105,7 +4066,6 @@ class TRANSHUMAN_PT_BODY_OPT(TranshumanPanel, bpy.types.Panel):
             context.scene.Transhuman_tool, "gender_definition", text="Definition Ratio"
         )
         row.column().label(text="", icon="EVENT_M")
-
 
 class TRANSHUMAN_PT_PERSONA(TranshumanPanel, bpy.types.Panel):
     bl_idname = "TRANSHUMAN_PT_PERSONA"
@@ -4159,7 +4119,141 @@ class TRANSHUMAN_PT_PERSONA(TranshumanPanel, bpy.types.Panel):
         row.column().label(text="", icon="BLANK1")
         row = box.row()
 
+class TRANSHUMAN_PT_MODIFIERS(TranshumanPanel, bpy.types.Panel):
+    bl_idname = "TRANSHUMAN_PT_DYNAMIC"
+    bl_parent_id = "TRANSHUMAN_PT_MAIN"
+    bl_label = "MODIFIERS"
 
+    def draw(self, context):
+        layout = self.layout
+
+        box = layout.box()
+        row = box.row()
+        row.column().label(
+            text="Subdivision Level:", icon="MOD_SUBSURF"
+        )
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().preset_prop(
+            "subdivision_level", text=""
+        )
+        box = layout.box()
+        row = box.row()
+        row.column().label(
+            text="Face Randomizer:", icon="SHADERFX"
+        )
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().prop(
+            context.scene.Transhuman_tool,
+            "random_extremity",
+            slider=True,
+            text="< Harmony / Chaos >",
+        )
+        row.column().operator(
+            "transhuman_operators.randomize_preset",
+            text="Randomize",
+        )
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().prop(
+            context.scene.Transhuman_tool, "randomize_from_preset", text=""
+        )
+        row.column().operator(
+            "transhuman_operators.randomize_from_preset",
+            text="Randomize Preset",
+        )
+        row = box.row()
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().label(
+            text="Select amount of Harmony / Chaos. Use 0.2 for natural results", icon="INFO"
+        )
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().label(
+            text="You can choose a preset to randomize upon", icon="INFO"
+        )         
+
+        box = layout.box()
+        row = box.row()
+        row.column().label(
+            text="Smooth Anatomy & Facial Features:", icon="MOD_SMOOTH"
+        )
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().preset_prop(
+            "smooth_custom", text="Level"
+        )
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().label(
+            text="Increase as needed to smooth chaotic anatomy", icon="INFO"
+        )
+
+        box = layout.box()
+        row = box.row()
+        row.column().label(
+            text="Bind Finished Transhuman:", icon="OUTLINER_OB_ARMATURE"
+        )
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        op = row.column().operator(
+            "transhuman_operators.bind_mesh", text="BIND",
+        )
+        op = row.column().operator(
+            "transhuman_operators.unbind_mesh", text="UNBIND",
+        )
+        row.column().label(icon="BLANK1")
+        row = box.row()
+        row = box.row()      
+        row.column().label(icon="BLANK1")
+        row.column().label(
+            text="Bind in T-Pose before render", icon="INFO"
+        )
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().label(
+            text="Remember to unbind before modifying appearance", icon="INFO"
+        )
+
+        box = layout.box()
+        row = box.row()
+        row = box.row()
+        row.column().label(
+            text="Dynamic Breasts:", icon="MOD_SOFT"
+        )
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().prop(context.scene.Transhuman_tool, "dynamic_breasts", text="On / Off")
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().label(
+            text="Cloth modifier for breast motion. Play animation and/or  bake",
+            icon="INFO",
+        )
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().label(
+            text="To avoid scares, turn on at 'Frame 1' only!",
+            icon="ERROR",
+        )
+
+        box = layout.box()
+        row = box.row()
+        row.column().label(
+            text="Dynamic Wrinkles:", icon="FORCE_TURBULENCE"
+        )
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().prop(context.scene.Transhuman_tool, "dynamic_wrinkles", text="On / Off")
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().label(
+            text="Automatically adds wrinkles in compressed areas for extra realism",
+            icon="INFO",
+        )
+   
 class TRANSHUMAN_PT_MAKEUP(TranshumanPanel, bpy.types.Panel):
     bl_idname = "TRANSHUMAN_PT_MAKEUP"
     bl_parent_id = "TRANSHUMAN_PT_MAIN"
@@ -4167,7 +4261,6 @@ class TRANSHUMAN_PT_MAKEUP(TranshumanPanel, bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-
 
 class TRANSHUMAN_PT_MAKEUP_BASE(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_MAKEUP"
@@ -4196,7 +4289,6 @@ class TRANSHUMAN_PT_MAKEUP_BASE(TranshumanPanel, bpy.types.Panel):
         row = layout.row()
         row.column().label(text="Contouring:")
         row.column().preset_prop("makeup_contouring", text="")
-
 
 class TRANSHUMAN_PT_MAKEUP_BLUSH(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_MAKEUP"
@@ -4234,7 +4326,6 @@ class TRANSHUMAN_PT_MAKEUP_BLUSH(TranshumanPanel, bpy.types.Panel):
         row.column().label(text="Gloss / Matte:")
         row.column().preset_prop("blush_settings_roughness", text="")
 
-
 class TRANSHUMAN_PT_MAKEUP_LIPS(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_MAKEUP"
     bl_label = "Lips"
@@ -4266,7 +4357,6 @@ class TRANSHUMAN_PT_MAKEUP_LIPS(TranshumanPanel, bpy.types.Panel):
         row = layout.row()
         row.column().label(text="Add lip gloss:")
         row.column().preset_prop("lip_gloss", text="")
-
 
 class TRANSHUMAN_PT_MAKEUP_LIP_LINER(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_MAKEUP"
@@ -4303,7 +4393,6 @@ class TRANSHUMAN_PT_MAKEUP_LIP_LINER(TranshumanPanel, bpy.types.Panel):
         row = layout.row()
         row.column().label(text="Add lip gloss:")
         row.column().preset_prop("lip_gloss", text="")
-
 
 class TRANSHUMAN_PT_MAKEUP_EYESHADOW(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_MAKEUP"
@@ -4347,7 +4436,6 @@ class TRANSHUMAN_PT_MAKEUP_EYESHADOW(TranshumanPanel, bpy.types.Panel):
         row = layout.row()
         row.column().label(text="Gloss / Matte:")
         row.column().preset_prop("eyeshadow_settings_roughness", text="")
-
 
 class TRANSHUMAN_PT_MAKEUP_LASHLINE(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_MAKEUP"
@@ -4396,7 +4484,6 @@ class TRANSHUMAN_PT_MAKEUP_LASHLINE(TranshumanPanel, bpy.types.Panel):
         row.column().label(text="Gloss / Matte:")
         row.column().preset_prop("lashline_settings_roughness", text="")
 
-
 class TRANSHUMAN_PT_MAKEUP_SHADOW_INNER(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_MAKEUP"
     bl_label = "Eyeshadow - Inner corner"
@@ -4437,7 +4524,6 @@ class TRANSHUMAN_PT_MAKEUP_SHADOW_INNER(TranshumanPanel, bpy.types.Panel):
         row.column().label(text="Gloss / Matte:")
         row.column().preset_prop("inner_shadow_settings_roughness", text="")
 
-
 class TRANSHUMAN_PT_MAKEUP_SHADOW_OUTER(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_MAKEUP"
     bl_label = "Eyeshadow - Outer corner"
@@ -4477,7 +4563,6 @@ class TRANSHUMAN_PT_MAKEUP_SHADOW_OUTER(TranshumanPanel, bpy.types.Panel):
         row = layout.row()
         row.column().label(text="Gloss / Matte:")
         row.column().preset_prop("outer_shadow_settings_roughness", text="")
-
 
 class TRANSHUMAN_PT_MAKEUP_HIGHLIGHT(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_MAKEUP"
@@ -4520,7 +4605,6 @@ class TRANSHUMAN_PT_MAKEUP_HIGHLIGHT(TranshumanPanel, bpy.types.Panel):
         row = layout.row()
         row.column().label(text="Gloss / Matte:")
         row.column().preset_prop("highlight_settings_roughness", text="")
-
 
 class TRANSHUMAN_PT_MAKEUP_EYELINER(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_MAKEUP"
@@ -4570,7 +4654,6 @@ class TRANSHUMAN_PT_MAKEUP_EYELINER(TranshumanPanel, bpy.types.Panel):
         row.column().label(text="Gloss / Matte:")
         row.column().preset_prop("eyeliner_settings_roughness", text="")
 
-
 class TRANSHUMAN_PT_MAKEUP_FACIAL_PAINT(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_MAKEUP"
     bl_label = "Facial Paint"
@@ -4611,7 +4694,6 @@ class TRANSHUMAN_PT_MAKEUP_FACIAL_PAINT(TranshumanPanel, bpy.types.Panel):
         row.column().label(text="Gloss / Matte:")
         row.column().preset_prop("facial_paint_settings_roughness", text="")
 
-
 class TRANSHUMAN_PT_MAKEUP_EYEBROWS(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_MAKEUP"
     bl_label = "Eyebrows"
@@ -4639,7 +4721,6 @@ class TRANSHUMAN_PT_MAKEUP_EYEBROWS(TranshumanPanel, bpy.types.Panel):
         row = layout.row()
         row.column().label(text="Color:")
         row.column().preset_prop("eyebrows_color_group", text="")
-
 
 class TRANSHUMAN_PT_MAKEUP_NAILS(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_MAKEUP"
@@ -4670,7 +4751,6 @@ class TRANSHUMAN_PT_MAKEUP_NAILS(TranshumanPanel, bpy.types.Panel):
             context.scene.Transhuman_tool, "nail_length", text="Nail Length"
         )
 
-
 class TRANSHUMAN_PT_WIG(TranshumanPanel, bpy.types.Panel):
     bl_idname = "TRANSHUMAN_PT_WIG"
     bl_parent_id = "TRANSHUMAN_PT_MAIN"
@@ -4689,7 +4769,7 @@ class TRANSHUMAN_PT_WIG(TranshumanPanel, bpy.types.Panel):
 
         box = layout.box()
         row = box.row()
-        row.column().label(text="COLOR OPTIONS", icon="EYEDROPPER")
+        row.column().label(text="Color Options:", icon="EYEDROPPER")
         row = box.row()
         row.column().label(icon="BLANK1")
         row.column().label(text="Scalp Color:")
@@ -4728,7 +4808,6 @@ class TRANSHUMAN_PT_WIG(TranshumanPanel, bpy.types.Panel):
         row.column().preset_prop("secondary_intensity_1", text="")
         row = box.row()
 
-
 class TRANSHUMAN_PT_BODY_HAIR(TranshumanPanel, bpy.types.Panel):
     bl_idname = "TRANSHUMAN_PT_BODY_HAIR"
     bl_parent_id = "TRANSHUMAN_PT_MAIN"
@@ -4745,7 +4824,6 @@ class TRANSHUMAN_PT_BODY_HAIR(TranshumanPanel, bpy.types.Panel):
             "hide_body_hairs",
             text="Hide Body Hairs from View",
         )
-
 
 class TRANSHUMAN_PT_EYEBROWS_HAIR(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_BODY_HAIR"
@@ -4825,7 +4903,6 @@ class TRANSHUMAN_PT_EYEBROWS_HAIR(TranshumanPanel, bpy.types.Panel):
             context.scene.Transhuman_tool, "eyebrows_5_mesh", text="Eyebrows 5"
         )
 
-
 class TRANSHUMAN_PT_EYELASHES_HAIR(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_BODY_HAIR"
     bl_label = "   Eyelashes"
@@ -4901,7 +4978,6 @@ class TRANSHUMAN_PT_EYELASHES_HAIR(TranshumanPanel, bpy.types.Panel):
         row.column().prop(
             context.scene.Transhuman_tool, "eyelashes_bottom_length", text="Bottom"
         )
-
 
 class TRANSHUMAN_PT_BEARD(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_BODY_HAIR"
@@ -4994,7 +5070,6 @@ class TRANSHUMAN_PT_BEARD(TranshumanPanel, bpy.types.Panel):
         row = box.row()
         row.column().label(icon="BLANK1")
         row.column().prop(context.scene.Transhuman_tool, "stubble_image", text="")
-
 
 class TRANSHUMAN_PT_BODY_HAIR_SUB(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_BODY_HAIR"
@@ -5207,7 +5282,6 @@ class TRANSHUMAN_PT_BODY_HAIR_SUB(TranshumanPanel, bpy.types.Panel):
             context.scene.Transhuman_tool, "body_hair_image", text="Amount"
         )
 
-
 class TRANSHUMAN_PT_TEETH(TranshumanPanel, bpy.types.Panel):
     bl_idname = "TRANSHUMAN_PT_TEETH"
     bl_parent_id = "TRANSHUMAN_PT_MAIN"
@@ -5292,7 +5366,6 @@ class TRANSHUMAN_PT_TEETH(TranshumanPanel, bpy.types.Panel):
         row.column().prop(context.scene.Transhuman_tool, "missing_23", text="23")
         row.column().prop(context.scene.Transhuman_tool, "missing_22", text="22")
 
-
 class TRANSHUMAN_PT_UNDERWEAR(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_MAIN"
     bl_label = "CLOTHES"
@@ -5338,8 +5411,6 @@ class TRANSHUMAN_PT_UNDERWEAR(TranshumanPanel, bpy.types.Panel):
             icon="BLANK1",
         )
 
-
-
 class TRANSHUMAN_PT_NSFW(TranshumanPanel, bpy.types.Panel):
     bl_idname = "TRANSHUMAN_PT_NSFW"
     bl_parent_id = "TRANSHUMAN_PT_MAIN"
@@ -5347,7 +5418,6 @@ class TRANSHUMAN_PT_NSFW(TranshumanPanel, bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-
 
 class TRANSHUMAN_PT_NIPPLES(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_NSFW"
@@ -5363,8 +5433,7 @@ class TRANSHUMAN_PT_NIPPLES(TranshumanPanel, bpy.types.Panel):
 
         row = layout.row()
         row.column().preset_prop("nipples_color", text="")
-        row.column().preset_prop("nipples_def", text="Color Definition")
-
+        row.column().preset_prop("nipples_def", text="Border Definition")
 
 class TRANSHUMAN_PT_FEMALE(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_NSFW"
@@ -5398,7 +5467,6 @@ class TRANSHUMAN_PT_FEMALE(TranshumanPanel, bpy.types.Panel):
         row.column().prop(
             context.scene.Transhuman_tool, "vulva_open", text="Open / Close"
         )
-
 
 class TRANSHUMAN_PT_MALE(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_NSFW"
@@ -5435,7 +5503,6 @@ class TRANSHUMAN_PT_MALE(TranshumanPanel, bpy.types.Panel):
             text="Add 'Bulge' when using Underwear to simulate volume", icon="INFO"
         )
 
-
 class TRANSHUMAN_PT_ANUS(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_NSFW"
     bl_label = "Anus"
@@ -5467,6 +5534,7 @@ classes = (
     TRANSHUMAN_OT_RANDOMIZE_PRESET,
     TRANSHUMAN_OT_RANDOMIZE_FROM_PRESET,
     TRANSHUMAN_OT_BIND_MESH,
+    TRANSHUMAN_OT_UNBIND_MESH,
     # Panels
     TRANSHUMAN_PT_MAIN,
     TRANSHUMAN_PT_RIG,
@@ -5487,6 +5555,7 @@ classes = (
     TRANSHUMAN_PT_BODY,
     TRANSHUMAN_PT_BODY_OPT,
     TRANSHUMAN_PT_PERSONA,
+    TRANSHUMAN_PT_MODIFIERS,
     TRANSHUMAN_PT_TEETH,
     TRANSHUMAN_PT_MAKEUP,
     TRANSHUMAN_PT_MAKEUP_BASE,

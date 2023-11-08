@@ -3,6 +3,9 @@ import random
 from functools import reduce
 import os
 
+randomize_modes = ['Standard', 'Progressive']
+randomize_modes_enum = [(mode, mode, mode) for mode in randomize_modes]
+
 class PresetSaver:
     def __init__(self, props, ext_props, random_props, random_prop_groups, addon_root):
         self.props = props
@@ -82,21 +85,22 @@ class PresetSaver:
             except TypeError as e:
                 print(e)
 
-    def randomize(self, context, selective=False):
+    def randomize(self, context, randomize_mode='Standard'):
         extremity = getattr(context.scene.Transhuman_tool, "random_extremity", None)
         power = self.convert_extremity_to_power(extremity)
         created = {}
         for key in self.random_props:
             min = self.random_props[key][0]
             max = self.random_props[key][1]
-            if selective:
+            if randomize_mode == 'Progressive':
                 current = self.getattr(key, context)
-                if current == 0:
-                    created[key] = self.get_random_value(min, max, power)
-                else:
-                    created[
-                        key
-                    ] = current  # leave the current value so later created[key] won't throw
+                new_value = self.get_random_value(-max, max, power) + current # -max is the min here because we want to be able to go back to 0.
+                # make sure that the new value is in the range
+                if new_value < min:
+                    new_value = min
+                elif new_value > max:
+                    new_value = max
+                created[key] = new_value
             else:
                 created[key] = self.get_random_value(min, max, power)
 
@@ -126,9 +130,9 @@ class PresetSaver:
         value = pow(base, power) * sign * max
         return value
 
-    def randomize_from_preset(self, context, name):
+    def randomize_from_preset(self, context, name, randomize_mode='Standard'):
         self.load(context, name)
-        self.randomize(context, selective=True)
+        self.randomize(context, randomize_mode)
 
     def get_saved_presets(self):
         preset_path = self.get_presets_path()

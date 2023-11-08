@@ -3,3 +3,4 @@ venv
 SM5 Transhuman.blend
 dist
 __pycache__
+*.blend

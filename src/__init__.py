@@ -18,6 +18,7 @@ if "bpy" in locals():
     importlib.reload(preset_saver)
 else:
     import bpy
+    import bpy_types
     from . import sm5_addon_utils
     from . import preset_saver
 
@@ -3095,6 +3096,11 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
 
     preset_name: bpy.props.StringProperty(name="Preset Name")
 
+    randomize_mode: bpy.props.EnumProperty(
+        items=preset_saver.randomize_modes_enum,
+        description="Randomize Mode",
+    )
+
     saved_presets: bpy.props.EnumProperty(
         items=lambda self, context: [
             (v, v, v) for v in presetSaver.get_saved_presets()
@@ -3109,10 +3115,15 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         description="Base preset for selective (targets only value=0) randomizer",
     )
 
+    is_bound: bpy.props.BoolProperty(name="Is Bound", default=False)
 
 # ------------------------------------------------------------------------
 #    Operators
 # ------------------------------------------------------------------------
+th4b_collection_name = 'Transhuman 4 Blender'
+def is_transhuman_loaded():
+    return bpy.data.collections.get(th4b_collection_name) is not None
+
 class TRANSHUMAN_OT_LOAD_ORIGINAL_COLLECTION(Operator):
     bl_idname = "transhuman_operators.load_original_collection"
     bl_label = "Load Transhuman"
@@ -3120,11 +3131,11 @@ class TRANSHUMAN_OT_LOAD_ORIGINAL_COLLECTION(Operator):
 
     def execute(self, context):
         path = sm5_addon_utils.get_addon_root(addon_name=addon_name) / 'assets' / 'SM5 Transhuman.blend'
-        collection_name = 'Transhuman 4 Blender'
         with bpy.data.libraries.load(str(path.absolute())) as (data_from, data_to):
-            data_to.collections.append(collection_name)
+            data_to.collections.append(th4b_collection_name)
 
-        collection = bpy.data.collections.get(collection_name)
+        collection = bpy.data.collections.get(th4b_collection_name)
+        bpy.ops.outliner.collection
         bpy.context.scene.collection.children.link(collection)
 
         return {"FINISHED"}
@@ -3186,7 +3197,7 @@ class TRANSHUMAN_OT_RANDOMIZE_PRESET(TRANSHUMAN_OT_CONFIRM):
     bl_description = "Randomize everything"
 
     def execute(self, context):
-        presetSaver.randomize(context)
+        presetSaver.randomize(context, context.scene.Transhuman_tool.randomize_mode)
 
         return {"FINISHED"}
 
@@ -3197,7 +3208,8 @@ class TRANSHUMAN_OT_RANDOMIZE_FROM_PRESET(TRANSHUMAN_OT_CONFIRM):
 
     def execute(self, context):
         presetSaver.randomize_from_preset(
-            context, context.scene.Transhuman_tool.randomize_from_preset
+            context, context.scene.Transhuman_tool.randomize_from_preset,
+            context.scene.Transhuman_tool.randomize_mode
         )
 
         return {"FINISHED"}
@@ -3239,20 +3251,35 @@ class TranshumanPanel:
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "Transhuman"
-    bl_options = {"DEFAULT_CLOSED"}
+
+class TRANSHUMAN_PT_INIT(TranshumanPanel, bpy.types.Panel):
+    bl_idname = "TRANSHUMAN_PT_INIT"
+    bl_label = "Transhuman4Blender"
+
+    @classmethod
+    def poll(cls, context):
+        return not is_transhuman_loaded()
+
+    def draw(self, context):
+        layout = self.layout
+
+        row = layout.row()
+        row.column().operator(
+            "transhuman_operators.load_original_collection", text="Load Transhuman", icon="IMPORT"
+        )
 
 class TRANSHUMAN_PT_MAIN(TranshumanPanel, bpy.types.Panel):
     bl_idname = "TRANSHUMAN_PT_MAIN"
     bl_label = "Transhuman4Blender"
 
+    @classmethod
+    def poll(cls, context):
+        return is_transhuman_loaded()
+
     def draw(self, context):
         layout = self.layout
 
         box = layout.box()
-        row = box.row()
-        row.column().operator(
-            "transhuman_operators.load_original_collection", text="Load Transhuman", icon="APPEND_BLEND"
-        )
 
         row = box.row()
         row.column().prop(context.scene.Transhuman_tool, "preset_name", text="")
@@ -4161,6 +4188,15 @@ class TRANSHUMAN_PT_MODIFIERS(TranshumanPanel, bpy.types.Panel):
         row.column().label(
             text="Face Randomizer:", icon="SHADERFX"
         )
+
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().prop(
+            context.scene.Transhuman_tool,
+            "randomize_mode",
+            text="Mode",
+        )
+
         row = box.row()
         row.column().label(icon="BLANK1")
         row.column().prop(
@@ -4217,12 +4253,16 @@ class TRANSHUMAN_PT_MODIFIERS(TranshumanPanel, bpy.types.Panel):
         )
         row = box.row()
         row.column().label(icon="BLANK1")
-        op = row.column().operator(
-            "transhuman_operators.bind_mesh", text="BIND",
-        )
-        op = row.column().operator(
-            "transhuman_operators.unbind_mesh", text="UNBIND",
-        )
+
+        if getattr(context.scene.Transhuman_tool, "is_bound", False):
+            row.column().operator(
+                "transhuman_operators.unbind_mesh", text="UNBIND",
+            )
+        else:
+            row.column().operator(
+                "transhuman_operators.bind_mesh", text="BIND",            
+            )
+
         row.column().label(icon="BLANK1")
         row = box.row()
         row = box.row()      
@@ -5555,6 +5595,7 @@ classes = (
     TRANSHUMAN_OT_BIND_MESH,
     TRANSHUMAN_OT_UNBIND_MESH,
     # Panels
+    TRANSHUMAN_PT_INIT,
     TRANSHUMAN_PT_MAIN,
     TRANSHUMAN_PT_RIG,
     TRANSHUMAN_PT_EYES,

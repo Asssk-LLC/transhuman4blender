@@ -749,16 +749,18 @@ def create_node_group_select(
         ),
     )
 
-def set_subdivision_level_value(level_value):
+def set_subdivision_level_value(self, context):
+    level_value = self.subdivision_level
     bpy.data.objects["SM5 Transhuman"].modifiers["Subdivision"].levels = level_value
     bpy.data.objects["SM5 Tears Transhuman"].modifiers["Subdivision"].levels = level_value
     levels = ['LV0', 'LV1', 'LV2', 'LV3']
-    for level in levels:
-        bpy.context.object.modifiers[level].show_viewport = False
-        bpy.context.object.modifiers[level].show_render = False
-
-    bpy.context.object.modifiers[levels[level_value]].show_viewport = True
-    bpy.context.object.modifiers[levels[level_value]].show_render = True
+    objects = ['SM5 Transhuman Underwear Top', 'SM5 Transhuman Underwear Bottom']
+    for object in objects:
+        for level in levels:
+            bpy.data.objects[object].modifiers[level].show_viewport = False
+            bpy.data.objects[object].modifiers[level].show_render = False
+        bpy.data.objects[object].modifiers[levels[level_value]].show_viewport = True
+        bpy.data.objects[object].modifiers[levels[level_value]].show_render = True
 
 def set_face_rig_switch_value(self, context):
     bpy.data.objects[
@@ -900,7 +902,6 @@ def set_hide_armatures_value(self, context):
 
 def set_hide_body_hairs_value(self, context):
     bpy.data.collections["Transhuman - BODY HAIR"].hide_viewport = self.hide_body_hairs
-
 
 def set_hide_hair_wig_value(self, context):
     bpy.data.collections["Transhuman - HAIR WIG"].hide_viewport = self.hide_hair_wig
@@ -1344,6 +1345,15 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         [],
         update=lambda self, context: set_hide_render_hair_wig_value(self, context),
         bool=True,
+    )
+
+    subdivision_level: create_linked_props(
+        "subdivision_level",
+        [],
+        update=lambda self, context: set_subdivision_level_value(self, context),
+        integer=True,
+        min=0,
+        max=3
     )
     
     dynamic_breasts: create_linked_props(
@@ -4142,7 +4152,8 @@ class TRANSHUMAN_PT_MODIFIERS(TranshumanPanel, bpy.types.Panel):
         )
         row = box.row()
         row.column().label(icon="BLANK1")
-        row.column().preset_prop(
+        row.column().prop(
+            context.scene.Transhuman_tool,
             "subdivision_level", text=""
         )
         box = layout.box()

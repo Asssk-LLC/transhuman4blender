@@ -1,8 +1,10 @@
 Error: Python: Traceback (most recent call last):
-  File "C:\Program Files\Blender Foundation\Blender 3.6\3.6\scripts\addons\transhuman_4_blender\__init__.py", line 3200, in execute
-    presetSaver.randomize(context, context.scene.Transhuman_tool.randomize_mode)
-  File "C:\Program Files\Blender Foundation\Blender 3.6\3.6\scripts\addons\transhuman_4_blender\preset_saver.py", line 96, in randomize
-    current = self.getattr(key, context)
-  File "C:\Program Files\Blender Foundation\Blender 3.6\3.6\scripts\addons\transhuman_4_blender\preset_saver.py", line 74, in getattr
-    return obj[real_key]
-KeyError: 'bpy_struct[key]: key "fem_face_1" not found'
+  File "C:\Program Files\Blender Foundation\Blender 3.6\3.6\scripts\addons\transhuman_4_blender\__init__.py", line 3210, in execute
+    presetSaver.randomize_from_preset(
+  File "C:\Program Files\Blender Foundation\Blender 3.6\3.6\scripts\addons\transhuman_4_blender\preset_saver.py", line 134, in randomize_from_preset
+    self.load(context, name)
+  File "C:\Program Files\Blender Foundation\Blender 3.6\3.6\scripts\addons\transhuman_4_blender\preset_saver.py", line 56, in load
+    self.setattrs(loaded, context)
+  File "C:\Program Files\Blender Foundation\Blender 3.6\3.6\scripts\addons\transhuman_4_blender\preset_saver.py", line 81, in setattrs
+    ext = self.ext_props[ext_prop_name]
+KeyError: 'color_amount'

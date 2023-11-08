@@ -71,7 +71,7 @@ class PresetSaver:
             obj = context.scene.Transhuman_tool
             real_key = key
 
-        return obj[real_key]
+        return getattr(obj, real_key)
 
     def setattrs(self, key_values, context):
         for key in key_values:

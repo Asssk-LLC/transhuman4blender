@@ -1,0 +1,8 @@
+Error: Python: Traceback (most recent call last):
+  File "C:\Program Files\Blender Foundation\Blender 3.6\3.6\scripts\addons\transhuman_4_blender\__init__.py", line 3200, in execute
+    presetSaver.randomize(context, context.scene.Transhuman_tool.randomize_mode)
+  File "C:\Program Files\Blender Foundation\Blender 3.6\3.6\scripts\addons\transhuman_4_blender\preset_saver.py", line 96, in randomize
+    current = self.getattr(key, context)
+  File "C:\Program Files\Blender Foundation\Blender 3.6\3.6\scripts\addons\transhuman_4_blender\preset_saver.py", line 74, in getattr
+    return obj[real_key]
+KeyError: 'bpy_struct[key]: key "fem_face_1" not found'

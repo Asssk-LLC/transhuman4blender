@@ -1199,6 +1199,7 @@ def create_linked_props(
     update=None,
     neg_mesh_and_keys=None,
     bool=False,
+    integer=False,
     objects=[],
     obj_and_modifiers=[],
 ):
@@ -1253,6 +1254,13 @@ def create_linked_props(
     if bool:
         return bpy.props.BoolProperty(
             name="", update=lambda self, context: set_value_of_key(self, context)
+        )
+    if integer:
+        return bpy.props.IntProperty(
+            name="",
+            min=min,
+            max=max,
+            update=lambda self, context: set_value_of_key(self, context),
         )
     return bpy.props.FloatProperty(
         name="",

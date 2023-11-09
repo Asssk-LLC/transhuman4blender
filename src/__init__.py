@@ -41,8 +41,6 @@ presetSaver = preset_saver.PresetSaver(
         "body_hair_image",
         "body_hair_mesh_UV_selector",
         "stubble_image",
-        "eyelashes_top_length",
-        "eyelashes_bottom_length",
         "eye_base_image",
         "pupil_switch",
         "iris",
@@ -232,7 +230,6 @@ presetSaver = preset_saver.PresetSaver(
         "teeth_size",
         "fangs_top",
         "fangs_bottom",
-        "eyelashes_mesh",
         "eyelashes_curves",
         "peach_fuzz_curves",
         "chest_curves",
@@ -345,7 +342,6 @@ presetSaver = preset_saver.PresetSaver(
         "eyelashes_spread_top":  [ lambda: bpy.data.node_groups["SM5 Top Eyelashes Transhuman" ].nodes["eyelashes_spread" ].outputs[0], "default_value", ],
         "eyelashes_spread_bottom":  [ lambda: bpy.data.node_groups["SM5 Bottom Eyelashes Transhuman" ].nodes["eyelashes_spread" ].outputs[0], "default_value", ],
         "eyelashes_clump":  [ lambda: bpy.data.node_groups["SM5 Top Eyelashes Transhuman" ].nodes["eyelashes_clump" ].inputs[0], "default_value", ],
-        "eyelashes_thickness_mesh":  [ lambda: bpy.data.materials["SM5 Eyelashes Mesh Material" ].node_tree.nodes["eyelashes_thickness" ].inputs[1], "default_value", ],
         "stubble_spread":  [ lambda: bpy.data.node_groups["SM5 Beard Transhuman" ].nodes["stubble_spread" ].outputs[0], "default_value", ],
         "stubble_amount":  [ lambda: bpy.data.node_groups["SM5 Beard Transhuman" ].nodes["stubble_amount" ].inputs[2], "default_value", ],
         "stubble_length":  [ lambda: bpy.data.node_groups["SM5 Beard Transhuman" ].nodes["stubble_length" ].inputs[3], "default_value", ],
@@ -1434,20 +1430,6 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         description="Select stubble type",
     )
 
-    eyelashes_top_length: create_linked_props(
-        "eyelashes_top_length",
-        [
-            ["Eyelashes Guide Keys Transhuman", "Eyelashes Length Top"],
-        ],
-    )
-
-    eyelashes_bottom_length: create_linked_props(
-        "eyelashes_bottom_length",
-        [
-            ["Eyelashes Guide Keys Transhuman", "Eyelashes Length Bottom"],
-        ],
-    )
-
     eye_base_image: create_image_select(
         "eye_base_image",
         image_suffix="Eyes",
@@ -1989,9 +1971,7 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
     eye_grow: create_linked_props(
         "eye_grow",
         [
-            ["Tears Key Transhuman", "Eyes +"],
             ["Eye Shape Keys Transhuman", "Eyes +"],
-            ["Eyelashes Guide Keys Transhuman", "Eyes +"],
             ["Transhuman Keys Rest", "Eyes +"],
         ],
     )
@@ -1999,9 +1979,7 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
     eye_shrink: create_linked_props(
         "eye_shrink",
         [
-            ["Tears Key Transhuman", "Eyes -"],
             ["Eye Shape Keys Transhuman", "Eyes -"],
-            ["Eyelashes Guide Keys Transhuman", "Eyes -"],
             ["Transhuman Keys Rest", "Eyes -"],
         ],
     )
@@ -2009,9 +1987,7 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
     eye_inward: create_linked_props(
         "eye_inward",
         [
-            ["Tears Key Transhuman", "Eyes in"],
             ["Eye Shape Keys Transhuman", "Eyes in"],
-            ["Eyelashes Guide Keys Transhuman", "Eyes in"],
             ["Transhuman Keys Rest", "Eyes in"],
         ],
     )
@@ -2019,9 +1995,7 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
     eye_outward: create_linked_props(
         "eye_outward",
         [
-            ["Tears Key Transhuman", "Eyes out"],
             ["Eye Shape Keys Transhuman", "Eyes out"],
-            ["Eyelashes Guide Keys Transhuman", "Eyes out"],
             ["Transhuman Keys Rest", "Eyes out"],
         ],
     )
@@ -2029,9 +2003,7 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
     eye_forward: create_linked_props(
         "eye_forward",
         [
-            ["Tears Key Transhuman", "Eyes front"],
             ["Eye Shape Keys Transhuman", "Eyes front"],
-            ["Eyelashes Guide Keys Transhuman", "Eyes front"],
             ["Transhuman Keys Rest", "Eyes front"],
         ],
     )
@@ -2039,9 +2011,7 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
     eye_backward: create_linked_props(
         "eye_backward",
         [
-            ["Tears Key Transhuman", "Eyes back"],
             ["Eye Shape Keys Transhuman", "Eyes back"],
-            ["Eyelashes Guide Keys Transhuman", "Eyes back"],
             ["Transhuman Keys Rest", "Eyes back"],
         ],
     )
@@ -2049,9 +2019,7 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
     eye_up: create_linked_props(
         "eye_up",
         [
-            ["Tears Key Transhuman", "Eye up"],
             ["Eye Shape Keys Transhuman", "Eyes up"],
-            ["Eyelashes Guide Keys Transhuman", "Eye up"],
             ["Transhuman Keys Rest", "Eye up"],
         ],
     )
@@ -2059,9 +2027,7 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
     eye_down: create_linked_props(
         "eye_down",
         [
-            ["Tears Key Transhuman", "Eye down"],
             ["Eye Shape Keys Transhuman", "Eyes down"],
-            ["Eyelashes Guide Keys Transhuman", "Eye down"],
             ["Transhuman Keys Rest", "Eye down"],
         ],
     )
@@ -2083,8 +2049,6 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
     eye_length: create_linked_props(
         "eye_length",
         [
-            ["Tears Key Transhuman", "Eyes long"],
-            ["Eyelashes Guide Keys Transhuman", "Eyes long"],
             ["Transhuman Keys Rest", "Eyes long"],
         ],
     )
@@ -2092,8 +2056,6 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
     eye_roundness: create_linked_props(
         "eye_roundness",
         [
-            ["Tears Key Transhuman", "Eyes round"],
-            ["Eyelashes Guide Keys Transhuman", "Eyes round"],
             ["Transhuman Keys Rest", "Eyes round"],
         ],
     )
@@ -2101,8 +2063,6 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
     eye_rotate: create_pos_neg_shape_key_prop_multi(
         "eye_rotate",
         [
-            ["Tears Key Transhuman", "Eye Rotate R", "Eye Rotate L"],
-            ["Eyelashes Guide Keys Transhuman", "Eye Rotate R", "Eye Rotate L"],
             ["Transhuman Keys Rest", "Eye Rotate R", "Eye Rotate L"],
         ],
     )
@@ -2110,8 +2070,6 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
     eye_corner: create_pos_neg_shape_key_prop_multi(
         "eye_corner",
         [
-            ["Tears Key Transhuman", "Eye corner up", "Eye corner down"],
-            ["Eyelashes Guide Keys Transhuman", "Eye corner up", "Eye corner down"],
             ["Transhuman Keys Rest", "Eye corner up", "Eye corner down"],
         ],
     )
@@ -2133,8 +2091,6 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
     tearduct: create_pos_neg_shape_key_prop_multi(
         "tearduct",
         [
-            ["Tears Key Transhuman", "Tearduct Up", "Tearduct"],
-            ["Eyelashes Guide Keys Transhuman", "Tearduct Up", "Tearduct"],
             ["Transhuman Keys Rest", "Tearduct Up", "Tearduct"],
         ],
     )
@@ -2143,7 +2099,6 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         "tearduct_sharp",
         [
             ["Transhuman Keys Rest", "Tearduct Sharpen"],
-            ["Eyelashes Guide Keys Transhuman", "Tearduct Sharpen"],
         ],
     )
 
@@ -2179,8 +2134,6 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         "eyebrows_arch",
         [
             ["Transhuman Keys Rest", "Eyebrows arch +", "Eyebrows arch -"],
-            ["Eyelashes Guide Keys Transhuman", "Eyebrows arch +", "Eyebrows arch -"],
-            ["Tears Key Transhuman", "Eyebrows arch +", "Eyebrows arch -"],
         ],
     )
 
@@ -2274,8 +2227,6 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         "face_length",
         [
             ["Transhuman Keys Rest", "Face length +", "Face length -"],
-            ["Eyelashes Guide Keys Transhuman", "Face length +", "Face length -"],
-            ["Tears Key Transhuman", "Face length +", "Face length -"],
         ],
     )
 
@@ -2283,8 +2234,6 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         "face_width",
         [
             ["Transhuman Keys Rest", "Face width +", "Face width -"],
-            ["Eyelashes Guide Keys Transhuman", "Face width +", "Face width -"],
-            ["Tears Key Transhuman", "Face width +", "Face width -"],
         ],
     )
 
@@ -2292,8 +2241,6 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         "face_convex",
         [
             ["Transhuman Keys Rest", "Face convex"],
-            ["Eyelashes Guide Keys Transhuman", "Face convex"],
-            ["Tears Key Transhuman", "Face convex"],
         ],
     )
 
@@ -2301,8 +2248,6 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         "face_concave",
         [
             ["Transhuman Keys Rest", "Face concave"],
-            ["Eyelashes Guide Keys Transhuman", "Face concave"],
-            ["Tears Keys Transhuman", "Face concave"],
         ],
     )
 
@@ -2408,8 +2353,6 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         "bridge_width",
         [
             ["Transhuman Keys Rest", "Bridge width +", "Bridge width -"],
-            ["Eyelashes Guide Keys Transhuman", "Bridge width +", "Bridge width -"],
-            ["Tears Keys Transhuman", "Bridge width +", "Bridge width -"],
         ],
     )
 
@@ -2735,8 +2678,6 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         "face_rectangle",
         [
             ["Transhuman Keys Rest", "Face Rectangle"],
-            ["Eyelashes Guide Keys Transhuman", "Face Rectangle"],
-            ["Tears Keys Transhuman", "Face Rectangle"],
         ],
     )
 
@@ -2744,8 +2685,6 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         "face_triangle",
         [
             ["Transhuman Keys Rest", "Face Triangle"],
-            ["Eyelashes Guide Keys Transhuman", "Face Triangle"],
-            ["Tears Keys Transhuman", "Face Triangle"],
         ],
     )
 
@@ -2753,8 +2692,6 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         "face_diamond",
         [
             ["Transhuman Keys Rest", "Face Diamond"],
-            ["Eyelashes Guide Keys Transhuman", "Face Diamond"],
-            ["Tears Keys Transhuman", "Face Diamond"],
         ],
     )
 
@@ -2762,8 +2699,6 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         "face_round",
         [
             ["Transhuman Keys Rest", "Face Round"],
-            ["Eyelashes Guide Keys Transhuman", "Face Round"],
-            ["Tears Keys Transhuman", "Face Round"],
         ],
     )
 
@@ -2771,8 +2706,6 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         "face_oval",
         [
             ["Transhuman Keys Rest", "Face Oval"],
-            ["Eyelashes Guide Keys Transhuman", "Face Oval"],
-            ["Tears Keys Transhuman", "Face Oval"],
         ],
     )
 
@@ -2780,8 +2713,6 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         "face_inversend_triangle",
         [
             ["Transhuman Keys Rest", "Face Inversed Triangle"],
-            ["Eyelashes Guide Keys Transhuman", "Face Inversed Triangle"],
-            ["Tears Keys Transhuman", "Face Inversed Triangle"],
         ],
     )
 
@@ -2968,10 +2899,6 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
 
     pubic_m_curves: create_linked_props(
         "pubic_m_curves", [], objects=["SM5 Pubic M Transhuman"], bool=True
-    )
-
-    eyelashes_mesh: create_linked_props(
-        "eyelashes_mesh", [], objects=["SM5 Eyelashes Mesh Transhuman"], bool=True
     )
 
     eyelashes_curves: create_linked_props(
@@ -5024,31 +4951,6 @@ class TRANSHUMAN_PT_EYELASHES_HAIR(TranshumanPanel, bpy.types.Panel):
         row.column().label(icon="BLANK1")
         row.column().prop(context.scene.Transhuman_tool, "eyelashes_clump_switch")
         row.column().preset_prop("eyelashes_clump", text="Amount")
-
-        box = layout.box()
-        row = box.row()
-        row.column().label(text="EYELASHES (MESH)", icon="MESH_DATA")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().prop(
-            context.scene.Transhuman_tool, "eyelashes_mesh", text="On / Off"
-        )
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().label(text="Hair thickness:")
-        row.column().preset_prop("eyelashes_thickness_mesh", text="")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().label(text="Length:")
-        row.column().prop(
-            context.scene.Transhuman_tool, "eyelashes_top_length", text="Top"
-        )
-        row.column().prop(
-            context.scene.Transhuman_tool, "eyelashes_bottom_length", text="Bottom"
-        )
 
 class TRANSHUMAN_PT_BEARD(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_BODY_HAIR"

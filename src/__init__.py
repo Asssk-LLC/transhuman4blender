@@ -597,7 +597,7 @@ presetSaver = preset_saver.PresetSaver(
             "keys": [
                 "fem_face_1" , "fem_face_2" , "fem_face_3" , "fem_face_4" , "fem_face_5" , "m_face_1" , "m_face_2" , "m_face_3" , "m_face_4" , "m_face_5"
             ],
-            "total": 0.1,
+            "total": 0.5,
         }
     ],
     sm5_addon_utils.get_addon_root(addon_name),
@@ -754,8 +754,10 @@ def set_subdivision_level_value(self, context):
     level_value = self.subdivision_level
     bpy.data.objects["SM5 Transhuman"].modifiers["Subdivision"].levels = level_value
     bpy.data.objects["SM5 Tears Transhuman"].modifiers["Subdivision"].levels = level_value
+    bpy.data.objects["SM5 Transhuman"].modifiers["Subdivision"].render_levels = level_value
+    bpy.data.objects["SM5 Tears Transhuman"].modifiers["Subdivision"].render_levels = level_value
     levels = ['LV0', 'LV1', 'LV2', 'LV3']
-    objects = ['SM5 Transhuman Underwear Top', 'SM5 Transhuman Underwear Bottom']
+    objects = ['SM5 Transhuman Underwear Top', 'SM5 Transhuman Underwear Bottom', 'SM5 Eyebrows Transhuman', 'SM5 Mesh Body Hair Transhuman']
     for object in objects:
         for level in levels:
             bpy.data.objects[object].modifiers[level].show_viewport = False
@@ -785,10 +787,6 @@ def set_face_rig_switch_value(self, context):
     ].data.shape_keys.animation_data.drivers:
         driver.mute = not self.face_rig_switch
     for driver in bpy.data.objects[
-        "SM5 Eyelashes Guide Transhuman"
-    ].data.shape_keys.animation_data.drivers:
-        driver.mute = not self.face_rig_switch
-    for driver in bpy.data.objects[
         "SM5 Tears Transhuman"
     ].data.shape_keys.animation_data.drivers:
         driver.mute = not self.face_rig_switch
@@ -806,9 +804,6 @@ def set_mixamo_value(self, context):
             "Armature"
         ].object = bpy.data.objects["SM5 Armature Transhuman"]
         bpy.data.objects["SM5 Tears Transhuman"].modifiers[
-            "Armature"
-        ].object = bpy.data.objects["SM5 Armature Transhuman"]
-        bpy.data.objects["SM5 Eyelashes Guide Transhuman"].modifiers[
             "Armature"
         ].object = bpy.data.objects["SM5 Armature Transhuman"]
         bpy.data.objects["SM5 Nails Transhuman"].modifiers[
@@ -842,9 +837,6 @@ def set_mixamo_IK_value(self, context):
             "Armature"
         ].object = bpy.data.objects["SM5 Armature IK/FK Transhuman"]
         bpy.data.objects["SM5 Tears Transhuman"].modifiers[
-            "Armature"
-        ].object = bpy.data.objects["SM5 Armature IK/FK Transhuman"]
-        bpy.data.objects["SM5 Eyelashes Guide Transhuman"].modifiers[
             "Armature"
         ].object = bpy.data.objects["SM5 Armature IK/FK Transhuman"]
         bpy.data.objects["SM5 Nails Transhuman"].modifiers[
@@ -911,7 +903,12 @@ def set_hide_render_hair_wig_value(self, context):
     bpy.data.collections[
         "Transhuman - HAIR WIG"
     ].hide_render = self.hide_render_hair_wig
-    
+
+def set_face_prop_value(self, context):
+    bpy.data.objects[
+        "SM5 Face Proportions"
+    ].hide_viewport = not self.face_prop
+
 def set_dynamic_breasts_value(self, context):
     bpy.data.objects["SM5 Transhuman"].modifiers["Dynamic Breasts"].show_viewport = self.dynamic_breasts
     bpy.data.objects["SM5 Transhuman"].modifiers["Dynamic Breasts"].show_render = self.dynamic_breasts
@@ -1345,6 +1342,13 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         "hide_render_hair_wig",
         [],
         update=lambda self, context: set_hide_render_hair_wig_value(self, context),
+        bool=True,
+    )
+
+    face_prop: create_linked_props(
+        "face_prop",
+        [],
+        update=lambda self, context: set_face_prop_value(self, context),
         bool=True,
     )
 
@@ -3314,6 +3318,9 @@ class TRANSHUMAN_PT_RIG(TranshumanPanel, bpy.types.Panel):
             "hide_armatures",
             text="Hide Armatures from View",
         )
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().prop(context.scene.Transhuman_tool, "face_prop", text="Check Proportions")
 
         box = layout.box()
         row = box.row()
@@ -3326,7 +3333,7 @@ class TRANSHUMAN_PT_RIG(TranshumanPanel, bpy.types.Panel):
         row.column().label(icon="BLANK1")
         row.column().prop(context.scene.Transhuman_tool, "face_rig_switch", text="Face")
         row.column().prop(context.scene.Transhuman_tool, "eye_rig", text="Eyes")
-        row.column().label(text="")
+        row.column().label(text="")   
 
         row = box.row()
         row.column().label(icon="BLANK1")

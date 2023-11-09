@@ -673,6 +673,28 @@ def create_image_select(
         update=update,
     )
 
+def create_mixamo_select():
+    return bpy.props.EnumProperty(
+        items=[
+            ('mixamo', 'mixamo', 'mixamo'),
+            ('IK/FK', 'IK/FK', 'IK/FK'),
+        ],
+        description="",
+        default='mixamo',
+        update=lambda self, context: update_mixamo(self, context)
+    )
+
+def create_face_rig_select():
+    return bpy.props.EnumProperty(
+        items=[
+            ('FACE_RIG', 'Face rig', 'Face rig'),
+            ('MOCAP', 'Mocap (add mocap data in animation panel)', 'Mocap'),
+        ],
+        description="",
+        default='FACE_RIG',
+        update=lambda self, context: update_face_rig(self.face_rig)
+    )
+
 def create_persona_select(prop_name, description="Select Persona"):
     persona_prefix = "SM5 Persona"
     persona_suffix = None
@@ -746,120 +768,112 @@ def create_node_group_select(
         ),
     )
 
-def set_subdivision_level_value(self, context):
+def set_subdivision_level_value(self, for_render):
     level_value = self.subdivision_level
-    bpy.data.objects["SM5 Transhuman"].modifiers["Subdivision"].levels = level_value
-    bpy.data.objects["SM5 Tears Transhuman"].modifiers["Subdivision"].levels = level_value
-    bpy.data.objects["SM5 Transhuman"].modifiers["Subdivision"].render_levels = level_value
-    bpy.data.objects["SM5 Tears Transhuman"].modifiers["Subdivision"].render_levels = level_value
+    level_prop = "render_levels" if for_render else "levels"
+    setattr(bpy.data.objects["SM5 Transhuman"].modifiers["Subdivision"], level_prop, level_value)
+    setattr(bpy.data.objects["SM5 Tears Transhuman"].modifiers["Subdivision"], level_prop, level_value)
     levels = ['LV0', 'LV1', 'LV2', 'LV3']
     objects = ['SM5 Transhuman Underwear Top', 'SM5 Transhuman Underwear Bottom', 'SM5 Eyebrows Transhuman', 'SM5 Mesh Body Hair Transhuman']
+
+    show_prop = "show_render" if for_render else "show_viewport"
     for object in objects:
         for level in levels:
-            bpy.data.objects[object].modifiers[level].show_viewport = False
-            bpy.data.objects[object].modifiers[level].show_render = False
-        bpy.data.objects[object].modifiers[levels[level_value]].show_viewport = True
-        bpy.data.objects[object].modifiers[levels[level_value]].show_render = True
+            setattr(bpy.data.objects[object].modifiers[level], show_prop, False)
+        setattr(bpy.data.objects[object].modifiers[levels[level_value]], show_prop, True)
 
-def set_face_rig_switch_value(self, context):
+
+def update_mixamo(self, context):
+    v = self.mixamo_mode
+    objects_to_hide = [
+        'SM5 Armature Transhuman',
+        'SM5 Armature IK/FK Transhuman'
+    ]
+    for obj in objects_to_hide:
+        bpy.data.objects[obj].hide_render = True
+        bpy.data.objects[obj].hide_viewport = True
+
+    target = ''
+    if v == 'mixamo':
+        target = objects_to_hide[0]
+    elif v == 'IK/FK':
+        target = objects_to_hide[1]
+    else:
+        print('unknwon mixamo mode')
+        return
+    
+    obj = bpy.data.objects[target]
+    obj.hide_render = False
+    obj.hide_viewport = False
+
+    objects_for_modifier_update = [
+        'SM5 Transhuman',
+        'SM5 Teeth Transhuman',
+        'SM5 Tears Transhuman',
+        'SM5 Nails Transhuman',
+        'SM5 Female Genitals Transhuman',
+        'SM5 Scalp Transhuman',
+    ]
+    for obj_for_modifier in objects_for_modifier_update:
+        bpy.data.objects[obj_for_modifier].modifiers["Armature"].object = obj
+
+    objects_for_constraint_update = [
+        'SM5 Male Genitals Rig Transhuman',
+        'SM5 Face Armature Transhuman',
+    ]
+    for obj_for_constraint in objects_for_constraint_update:
+        bpy.data.objects[obj_for_constraint].constraints["Child Of"].target = obj
+
+    bpy.data.objects["SM5 Toes Armature Transhuman"].pose.bones[
+        "SM5-toes-R"
+    ].constraints["Child Of"].target = obj
+
+    bpy.data.objects["SM5 Toes Armature Transhuman"].pose.bones[
+        "SM5-toes-L"
+    ].constraints["Child Of"].target = obj
+
+def update_face_rig(face_rig):
+    eye_objects = [
+        "SM5 Eyes Target Transhuman",
+        "SM5 Eyes Left Target",
+        "SM5 Eyes Right Target",
+    ]
+    is_mocap = face_rig == 'MOCAP'
+    for eye_object in eye_objects:
+        bpy.data.objects[eye_object].hide_viewport = is_mocap
+        bpy.data.objects[eye_object].hide_render = is_mocap
+
+    set_face_rig_switch_value(face_rig == 'FACE_RIG')
+
+def set_face_rig_switch_value(value):
     bpy.data.objects[
         "SM5 Face Armature Transhuman"
-    ].hide_viewport = not self.face_rig_switch
+    ].hide_viewport = not value
     bpy.data.objects[
         "SM5 Face Armature Transhuman"
-    ].hide_render = not self.face_rig_switch
+    ].hide_render = not value
     bpy.data.objects["SM5 Face Armature Transhuman"].pose.bones[
         "SM5-eyes-cntrl-L"
-    ].constraints["Copy Location"].enabled = not self.face_rig_switch
+    ].constraints["Copy Location"].enabled = not value
     bpy.data.objects["SM5 Face Armature Transhuman"].pose.bones[
         "SM5-eyes-cntrl"
-    ].constraints["Copy Location"].enabled = not self.face_rig_switch
+    ].constraints["Copy Location"].enabled = not value
     bpy.data.objects["SM5 Face Armature Transhuman"].pose.bones[
         "SM5-eyes-cntrl-R"
-    ].constraints["Copy Location"].enabled = not self.face_rig_switch
+    ].constraints["Copy Location"].enabled = not value
 
     for driver in bpy.data.objects[
         "SM5 Transhuman"
     ].data.shape_keys.animation_data.drivers:
-        driver.mute = not self.face_rig_switch
+        driver.mute = not value
     for driver in bpy.data.objects[
         "SM5 Tears Transhuman"
     ].data.shape_keys.animation_data.drivers:
-        driver.mute = not self.face_rig_switch
+        driver.mute = not value
     for driver in bpy.data.objects[
         "SM5 Teeth Transhuman"
     ].data.shape_keys.animation_data.drivers:
-        driver.mute = not self.face_rig_switch
-
-def set_mixamo_value(self, context):
-    if self.mixamo:
-        bpy.data.objects["SM5 Transhuman"].modifiers[
-            "Armature"
-        ].object = bpy.data.objects["SM5 Armature Transhuman"]
-        bpy.data.objects["SM5 Teeth Transhuman"].modifiers[
-            "Armature"
-        ].object = bpy.data.objects["SM5 Armature Transhuman"]
-        bpy.data.objects["SM5 Tears Transhuman"].modifiers[
-            "Armature"
-        ].object = bpy.data.objects["SM5 Armature Transhuman"]
-        bpy.data.objects["SM5 Nails Transhuman"].modifiers[
-            "Armature"
-        ].object = bpy.data.objects["SM5 Armature Transhuman"]
-        bpy.data.objects["SM5 Female Genitals Transhuman"].modifiers[
-            "Armature"
-        ].object = bpy.data.objects["SM5 Armature Transhuman"]
-        bpy.data.objects["SM5 Male Genitals Rig Transhuman"].constraints[
-            "Child Of"
-        ].target = bpy.data.objects["SM5 Armature Transhuman"]
-        bpy.data.objects["SM5 Face Armature Transhuman"].constraints[
-            "Child Of"
-        ].target = bpy.data.objects["SM5 Armature Transhuman"]
-        bpy.data.objects["SM5 Toes Armature Transhuman"].pose.bones[
-            "SM5-toes-R"
-        ].constraints["Child Of"].target = bpy.data.objects["SM5 Armature Transhuman"]
-        bpy.data.objects["SM5 Toes Armature Transhuman"].pose.bones[
-            "SM5-toes-L"
-        ].constraints["Child Of"].target = bpy.data.objects["SM5 Armature Transhuman"]
-        bpy.data.objects["SM5 Scalp Transhuman"].modifiers[
-            "Armature"
-        ].object = bpy.data.objects["SM5 Armature Transhuman"]
-
-def set_mixamo_IK_value(self, context):
-    if self.mixamo_IK:
-        bpy.data.objects["SM5 Transhuman"].modifiers[
-            "Armature"
-        ].object = bpy.data.objects["SM5 Armature IK/FK Transhuman"]
-        bpy.data.objects["SM5 Teeth Transhuman"].modifiers[
-            "Armature"
-        ].object = bpy.data.objects["SM5 Armature IK/FK Transhuman"]
-        bpy.data.objects["SM5 Tears Transhuman"].modifiers[
-            "Armature"
-        ].object = bpy.data.objects["SM5 Armature IK/FK Transhuman"]
-        bpy.data.objects["SM5 Nails Transhuman"].modifiers[
-            "Armature"
-        ].object = bpy.data.objects["SM5 Armature IK/FK Transhuman"]
-        bpy.data.objects["SM5 Female Genitals Transhuman"].modifiers[
-            "Armature"
-        ].object = bpy.data.objects["SM5 Armature IK/FK Transhuman"]
-        bpy.data.objects["SM5 Male Genitals Rig Transhuman"].constraints[
-            "Child Of"
-        ].target = bpy.data.objects["SM5 Armature IK/FK Transhuman"]
-        bpy.data.objects["SM5 Face Armature Transhuman"].constraints[
-            "Child Of"
-        ].target = bpy.data.objects["SM5 Armature IK/FK Transhuman"]
-        bpy.data.objects["SM5 Toes Armature Transhuman"].pose.bones[
-            "SM5-toes-R"
-        ].constraints["Child Of"].target = bpy.data.objects[
-            "SM5 Armature IK/FK Transhuman"
-        ]
-        bpy.data.objects["SM5 Toes Armature Transhuman"].pose.bones[
-            "SM5-toes-L"
-        ].constraints["Child Of"].target = bpy.data.objects[
-            "SM5 Armature IK/FK Transhuman"
-        ]
-        bpy.data.objects["SM5 Scalp Transhuman"].modifiers[
-            "Armature"
-        ].object = bpy.data.objects["SM5 Armature IK/FK Transhuman"]
+        driver.mute = not value
 
 def set_persona_switch_value(self, context):
     bpy.data.node_groups["SM5 Persona Selector"].nodes[
@@ -1313,6 +1327,8 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         bool=True,
     )
 
+    mixamo_mode: create_mixamo_select()
+
     hide_armatures: create_linked_props(
         "hide_armatures",
         [],
@@ -1351,7 +1367,16 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
     subdivision_level: create_linked_props(
         "subdivision_level",
         [],
-        update=lambda self, context: set_subdivision_level_value(self, context),
+        update=lambda self, context: set_subdivision_level_value(self, False),
+        integer=True,
+        min=0,
+        max=3
+    )
+
+    subdivision_level_for_render: create_linked_props(
+        "subdivision_level_for_render",
+        [],
+        update=lambda self, context: set_subdivision_level_value(self, True),
         integer=True,
         min=0,
         max=3
@@ -1371,21 +1396,7 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         bool=True,
     )
 
-    eye_rig: create_linked_props(
-        "eye_rig",
-        [],
-        objects=[
-            "SM5 Eyes Target Transhuman",
-            "SM5 Eyes Left Target",
-            "SM5 Eyes Right Target",
-        ],
-        bool=True,
-    )
-
-    face_rig_switch: bpy.props.BoolProperty(
-        name="Mute drivers",
-        update=lambda self, context: set_face_rig_switch_value(self, context),
-    )
+    face_rig: create_face_rig_select()
 
     toes_rig: create_linked_props(
         "toes_rig", [], objects=["SM5 Toes Armature Transhuman"], bool=True
@@ -3252,15 +3263,15 @@ class TRANSHUMAN_PT_RIG(TranshumanPanel, bpy.types.Panel):
         box = layout.box()
         row = box.row()
         row.column().label(icon="BLANK1")
-        row.column().prop(context.scene.Transhuman_tool, "mixamo", text="Mixamo")
-        row.column().prop(context.scene.Transhuman_tool, "mixamo_IK", text="IK/FK")
+        row.column().prop(context.scene.Transhuman_tool, "mixamo_mode", text="Armature")
+        
+        row = box.row()
+        row.column().label(icon="BLANK1")
         row.column().prop(context.scene.Transhuman_tool, "toes_rig", text="Toes")
 
         row = box.row()
         row.column().label(icon="BLANK1")
-        row.column().prop(context.scene.Transhuman_tool, "face_rig_switch", text="Face")
-        row.column().prop(context.scene.Transhuman_tool, "eye_rig", text="Eyes")
-        row.column().label(text="")   
+        row.column().prop(context.scene.Transhuman_tool, "face_rig", text="Face")
 
         row = box.row()
         row.column().label(icon="BLANK1")
@@ -4120,8 +4131,13 @@ class TRANSHUMAN_PT_MODIFIERS(TranshumanPanel, bpy.types.Panel):
         row.column().label(icon="BLANK1")
         row.column().prop(
             context.scene.Transhuman_tool,
-            "subdivision_level", text=""
+            "subdivision_level", text="Viewport"
         )
+        row.column().prop(
+            context.scene.Transhuman_tool,
+            'subdivision_level_for_render', text="Render"
+        )
+        
         box = layout.box()
         row = box.row()
         row.column().label(

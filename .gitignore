@@ -4,3 +4,6 @@ SM5 Transhuman.blend
 dist
 __pycache__
 *.blend
+src/presets/*
+
+!src/presets/*_SM5_*.json

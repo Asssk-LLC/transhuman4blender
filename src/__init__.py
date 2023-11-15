@@ -9,7 +9,7 @@ bl_info = {
     "location": "3D View > Tools",
     "wiki_url": "https://sm5.heledahn.com/",
     "tracker_url": "",
-    "category": "Development",
+    "category": "Object",
 }
 
 if "bpy" in locals():
@@ -305,11 +305,6 @@ presetSaver = preset_saver.PresetSaver(
         "body_hair_decimate":  [ lambda: bpy.data.node_groups["SM5 Body Hair Transhuman" ].nodes["hair_decimate" ].inputs[6], "default_value", ],
         "body_hair_thickness":  [ lambda: bpy.data.node_groups["SM5 Body Hair Transhuman" ].nodes["thickness" ].outputs[0], "default_value", ],
         "body_hair_secondary_intensity":  [ lambda: bpy.data.node_groups["SM5 Body Hair Color Transhuman" ].nodes["secondary_intensity" ].color_ramp.elements[1], "position", ],
-        "body_hair_mesh_thickness":  [ lambda: bpy.data.materials["SM5 Body Hair Mesh Material" ].node_tree.nodes["body_hair_mesh_thickness" ].inputs[1], "default_value", ],
-        "mesh_body_hair_amount":  [ lambda: bpy.data.node_groups["SM5 Mesh Body Hair Transhuman" ].nodes["mesh_body_hair_amount" ].inputs[2], "default_value", ],
-        "mesh_body_hair_scale":  [ lambda: bpy.data.node_groups["SM5 Mesh Body Hair Transhuman" ].nodes["mesh_body_hair_scale" ].inputs[2], "default_value", ],
-        "mesh_body_hair_groom":  [ lambda: bpy.data.node_groups["SM5 Mesh Body Hair Transhuman" ].nodes["mesh_body_hair_groom" ].inputs[0], "default_value", ],
-        "mesh_body_hair_factor":  [ lambda: bpy.data.node_groups["SM5 Mesh Body Hair Transhuman" ].nodes["mesh_body_hair_factor" ].inputs[1], "default_value", ],
         "body_hair_bump":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["body_hair_bump" ].inputs[0], "default_value", ],
         "body_hair_thickness_texture":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["body_hair_thickness_texture" ].inputs[1], "default_value", ],
         "stubble_color":  [ lambda: bpy.data.node_groups["SM5 Stubble Color Transhuman" ].nodes["stubble_color" ].outputs[0], "default_value", ],
@@ -593,7 +588,7 @@ presetSaver = preset_saver.PresetSaver(
             "keys": [
                 "fem_face_1" , "fem_face_2" , "fem_face_3" , "fem_face_4" , "fem_face_5" , "m_face_1" , "m_face_2" , "m_face_3" , "m_face_4" , "m_face_5"
             ],
-            "total": 0.5,
+            "total": 1,
         }
     ],
     sm5_addon_utils.get_addon_root(addon_name),
@@ -676,11 +671,11 @@ def create_image_select(
 def create_mixamo_select():
     return bpy.props.EnumProperty(
         items=[
-            ('mixamo', 'mixamo', 'mixamo'),
+            ('Mixamo', 'Mixamo', 'Mixamo'),
             ('IK/FK', 'IK/FK', 'IK/FK'),
         ],
         description="",
-        default='mixamo',
+        default='Mixamo',
         update=lambda self, context: update_mixamo(self, context)
     )
 
@@ -774,7 +769,7 @@ def set_subdivision_level_value(self, for_render):
     setattr(bpy.data.objects["SM5 Transhuman"].modifiers["Subdivision"], level_prop, level_value)
     setattr(bpy.data.objects["SM5 Tears Transhuman"].modifiers["Subdivision"], level_prop, level_value)
     levels = ['LV0', 'LV1', 'LV2', 'LV3']
-    objects = ['SM5 Transhuman Underwear Top', 'SM5 Transhuman Underwear Bottom', 'SM5 Eyebrows Transhuman', 'SM5 Mesh Body Hair Transhuman']
+    objects = ['SM5 Transhuman Underwear Top', 'SM5 Transhuman Underwear Bottom', 'SM5 Eyebrows Transhuman']
 
     show_prop = "show_render" if for_render else "show_viewport"
     for object in objects:
@@ -794,7 +789,7 @@ def update_mixamo(self, context):
         bpy.data.objects[obj].hide_viewport = True
 
     target = ''
-    if v == 'mixamo':
+    if v == 'Mixamo':
         target = objects_to_hide[0]
     elif v == 'IK/FK':
         target = objects_to_hide[1]
@@ -1071,10 +1066,7 @@ def set_node_group_value(node_group_name, node_name, value):
     ].default_value = value
 
 def set_secondary_body_hair_switch_value(self, context):
-    bpy.data.materials["SM5 Body Hair Mesh Material"].node_tree.nodes[
-        "secondary_body_color_mute"
-    ].mute = not self.secondary_body_hair_switch
-    bpy.data.materials["SM5 Body Hair Particle"].node_tree.nodes[
+    bpy.data.materials["SM5 Body Hair Particle Material"].node_tree.nodes[
         "secondary_body_color_mute"
     ].mute = not self.secondary_body_hair_switch
 
@@ -1092,102 +1084,6 @@ def set_root_invert_value(self, context):
     bpy.data.node_groups["SM5 Hair Color Transhuman"].nodes[
         "root_invert"
     ].mute = not self.root_invert
-
-def set_armpit_switch_value(self, context):
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Armpit"
-    ].show_viewport = not self.armpit_switch
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Armpit"
-    ].show_render = not self.armpit_switch
-
-def set_arms_switch_value(self, context):
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Arms"
-    ].show_viewport = not self.arms_switch
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Arms"
-    ].show_render = not self.arms_switch
-
-def set_forearms_switch_value(self, context):
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Forearms"
-    ].show_viewport = not self.forearms_switch
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Forearms"
-    ].show_render = not self.forearms_switch
-
-def set_chest_switch_value(self, context):
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Chest"
-    ].show_viewport = not self.chest_switch
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Chest"
-    ].show_render = not self.chest_switch
-
-def set_chest_extra_switch_value(self, context):
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Chest Extra"
-    ].show_viewport = not self.chest_extra_switch
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Chest Extra"
-    ].show_render = not self.chest_extra_switch
-
-def set_stomach_switch_value(self, context):
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Stomach"
-    ].show_viewport = not self.stomach_switch
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Stomach"
-    ].show_render = not self.stomach_switch
-
-def set_back_switch_value(self, context):
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Back"
-    ].show_viewport = not self.back_switch
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Back"
-    ].show_render = not self.back_switch
-
-def set_thighs_switch_value(self, context):
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Thighs"
-    ].show_viewport = not self.thighs_switch
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Thighs"
-    ].show_render = not self.thighs_switch
-
-def set_shins_switch_value(self, context):
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Shins"
-    ].show_viewport = not self.shins_switch
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Shins"
-    ].show_render = not self.shins_switch
-
-def set_hands_feet_switch_value(self, context):
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Hands & Feet"
-    ].show_viewport = not self.hands_feet_switch
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Hands & Feet"
-    ].show_render = not self.hands_feet_switch
-
-def set_pubic_f_switch_value(self, context):
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Pubic F"
-    ].show_viewport = not self.pubic_f_switch
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Pubic F"
-    ].show_render = not self.pubic_f_switch
-
-def set_pubic_m_switch_value(self, context):
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Pubic M"
-    ].show_viewport = not self.pubic_m_switch
-    bpy.data.objects["SM5 Mesh Body Hair Transhuman"].modifiers[
-        "Pubic M"
-    ].show_render = not self.pubic_m_switch
 
 def refresh_gender_definition(context):
     f_base = context.scene.Transhuman_tool["female_base"]
@@ -1423,14 +1319,6 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         material="SM5 Skin Material Transhuman",
         node="body_hair_image_input",
         description="Select body hair type",
-    )
-
-    body_hair_mesh_UV_selector: create_node_group_select(
-        "body_hair_mesh_UV_selector",
-        suffix="UV",
-        material="SM5 Body Hair Mesh Material",
-        node="body_hair_mesh_UV_selector",
-        description="Kink",
     )
 
     stubble_image: create_image_select(
@@ -3264,10 +3152,6 @@ class TRANSHUMAN_PT_RIG(TranshumanPanel, bpy.types.Panel):
         row = box.row()
         row.column().label(icon="BLANK1")
         row.column().prop(context.scene.Transhuman_tool, "mixamo_mode", text="Armature")
-        
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().prop(context.scene.Transhuman_tool, "toes_rig", text="Toes")
 
         row = box.row()
         row.column().label(icon="BLANK1")
@@ -3275,10 +3159,9 @@ class TRANSHUMAN_PT_RIG(TranshumanPanel, bpy.types.Panel):
 
         row = box.row()
         row.column().label(icon="BLANK1")
-        row.column().label(
-            text="Choose 'Eyes' and deactivate 'Face' when using mocap data",
-            icon="INFO",
-        )     
+        row.column().label(text="Extras:")
+        row.column().prop(context.scene.Transhuman_tool, "toes_rig", text="Toes")
+
 
 class TRANSHUMAN_PT_EYES(TranshumanPanel, bpy.types.Panel):
     bl_idname = "TRANSHUMAN_PT_EYES"
@@ -5086,7 +4969,7 @@ class TRANSHUMAN_PT_BODY_HAIR_SUB(TranshumanPanel, bpy.types.Panel):
 
         box = layout.box()
         row = box.row()
-        row.column().label(text="BODY HAIR (CURVES)", icon="OUTLINER_OB_CURVES")
+        row.column().label(text="BODY HAIR", icon="OUTLINER_OB_CURVES")
 
         row = box.row()
         row.column().label(icon="BLANK1")
@@ -5183,69 +5066,6 @@ class TRANSHUMAN_PT_BODY_HAIR_SUB(TranshumanPanel, bpy.types.Panel):
         row.column().label(icon="BLANK1")
         row.column().label(text="")
         row.column().preset_prop("body_hair_random_length_max", text="Max.")
-
-        box = layout.box()
-        row = box.row()
-        row.column().label(text="BODY HAIR (MESH)", icon="MESH_DATA")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().label(text="Works great with 'Body Hair (Texture)'", icon="LIGHT")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().prop(context.scene.Transhuman_tool, "chest_switch")
-        row.column().prop(context.scene.Transhuman_tool, "chest_extra_switch")
-        row.column().prop(context.scene.Transhuman_tool, "back_switch")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().prop(context.scene.Transhuman_tool, "armpit_switch")
-        row.column().prop(context.scene.Transhuman_tool, "arms_switch")
-        row.column().prop(context.scene.Transhuman_tool, "forearms_switch")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().prop(context.scene.Transhuman_tool, "stomach_switch")
-        row.column().prop(context.scene.Transhuman_tool, "thighs_switch")
-        row.column().prop(context.scene.Transhuman_tool, "shins_switch")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().prop(context.scene.Transhuman_tool, "hands_feet_switch")
-        row.column().prop(context.scene.Transhuman_tool, "pubic_f_switch")
-        row.column().prop(context.scene.Transhuman_tool, "pubic_m_switch")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().label(text="Hair Amount:")
-        row.column().preset_prop("mesh_body_hair_amount", text="")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().label(text="Hair Thickness:")
-        row.column().preset_prop("body_hair_mesh_thickness", text="")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().label(text="Hair Scale:")
-        row.column().preset_prop("mesh_body_hair_scale", text="")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().label(text="Spread Factor:")
-        row.column().preset_prop("mesh_body_hair_factor", text="")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().label(text="Groom:")
-        row.column().preset_prop("mesh_body_hair_groom", text="")
-
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().prop(
-            context.scene.Transhuman_tool, "body_hair_mesh_UV_selector", text="Kink"
-        )
 
         box = layout.box()
         row = box.row()

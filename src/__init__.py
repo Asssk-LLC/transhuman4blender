@@ -3035,6 +3035,8 @@ class TRANSHUMAN_OT_LOAD_ORIGINAL_COLLECTION(Operator):
         path = sm5_addon_utils.get_addon_root(addon_name=addon_name) / 'assets' / 'SM5 Transhuman.blend'
         with bpy.data.libraries.load(str(path.absolute())) as (data_from, data_to):
             data_to.collections.append(th4b_collection_name)
+            for img in data_from.images:
+                data_to.images = [img]
 
         collection = bpy.data.collections.get(th4b_collection_name)
         bpy.ops.outliner.collection

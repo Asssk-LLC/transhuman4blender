@@ -3017,6 +3017,24 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         description="Base preset for selective (targets only value=0) randomizer",
     )
 
+    conceive_preset_a: bpy.props.EnumProperty(
+        items=lambda self, context: [
+            (v, v, v) for v in presetSaver.get_saved_presets()
+        ],
+        description="Conceive preset A",
+    )
+    
+    conceive_preset_b: bpy.props.EnumProperty(
+        items=lambda self, context: [
+            (v, v, v) for v in presetSaver.get_saved_presets()
+        ],
+        description="Conceive preset B",
+    )
+
+    conceive_b_weight: bpy.props.FloatProperty(
+        description="0 => A (100%) / B (0%), 1 => A (0%) / B (100%)", min=0, max=1, default=0.5
+    )
+
     is_bound: bpy.props.BoolProperty(name="Is Bound", default=False)
 
 # ------------------------------------------------------------------------
@@ -3119,6 +3137,21 @@ class TRANSHUMAN_OT_RANDOMIZE_FROM_PRESET(TRANSHUMAN_OT_CONFIRM):
 
         return {"FINISHED"}
     
+class TRANSHUMAN_OT_CONCEIVE_FROM_PRESETS(TRANSHUMAN_OT_CONFIRM):
+    bl_idname = "transhuman_operators.conceive_from_presets"
+    bl_label = "This will overwrite the current settings. Continue?"
+    bl_description = "Mix the selected 2 presets with the selected weight"
+
+    def execute(self, context):
+        presetSaver.conceive_from_presets(
+            context,
+            context.scene.Transhuman_tool.conceive_preset_a,
+            context.scene.Transhuman_tool.conceive_preset_b,
+            context.scene.Transhuman_tool.conceive_b_weight,
+        )
+
+        return {"FINISHED"}
+
 class TRANSHUMAN_OT_UNBIND_MESH(TRANSHUMAN_OT_CONFIRM):
     bl_idname = "transhuman_operators.unbind_mesh"
     bl_label = "This will disable/unbind the mesh from its current state"
@@ -4216,6 +4249,35 @@ class TRANSHUMAN_PT_MODIFIERS(TranshumanPanel, bpy.types.Panel):
         row.column().label(
             text="You can choose a preset to randomize upon", icon="INFO"
         )         
+
+        ## concepion
+        box = layout.box()
+        row = box.row()
+        row.column().label(
+            text="Conception:", icon="COMMUNITY"
+        )
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.label(text="Choose A and B specimens (presets):")
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().prop(
+            context.scene.Transhuman_tool, 'conceive_preset_a', text="A"
+        )
+        row.column().prop(
+            context.scene.Transhuman_tool, 'conceive_preset_b', text="B"
+        )
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.prop(
+            context.scene.Transhuman_tool, 'conceive_b_weight', text="B Weight"
+        )
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.operator(
+            'transhuman_operators.conceive_from_presets',
+            text="Conceive",
+        )
 
         box = layout.box()
         row = box.row()
@@ -5840,6 +5902,7 @@ classes = (
     TRANSHUMAN_OT_LOAD_PRESET,
     TRANSHUMAN_OT_RANDOMIZE_PRESET,
     TRANSHUMAN_OT_RANDOMIZE_FROM_PRESET,
+    TRANSHUMAN_OT_CONCEIVE_FROM_PRESETS,
     TRANSHUMAN_OT_BIND_MESH,
     TRANSHUMAN_OT_UNBIND_MESH,
     TRANSHUMAN_OT_FINALIZE_HAIR,

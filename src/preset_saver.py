@@ -48,14 +48,17 @@ class PresetSaver:
         with open(self.get_presets_path() / preset_name, "w") as f:
             json.dump(values, f, indent=4)
 
-    def load(self, context, name):
+    def set_selected_preset(self, context, name):
+        setattr(context.scene.Transhuman_tool, "preset_name", name)
+
+    def load(self, context, name, weight_override=1):
         preset_name = self.get_preset_name(name)
         try:
             with open(self.get_presets_path() / preset_name, "r") as f:
                 loaded = json.load(f)
-                self.setattrs(loaded, context)
+                self.setattrs(loaded, context, weight_override)
             
-            setattr(context.scene.Transhuman_tool, "preset_name", name)
+            self.set_selected_preset(context, name)
         except FileNotFoundError:
             raise Exception("Preset not found by key: " + name)
 
@@ -77,19 +80,57 @@ class PresetSaver:
 
         return getattr(obj, real_key)
 
-    def setattrs(self, key_values, context):
+    def setattrs(self, key_values, context, weight_override=1):
         for key in key_values:
             try:
                 if key.startswith(self.ext_prop_prefix):
                     ext_prop_name = key[len(self.ext_prop_prefix) :]
                     ext = self.ext_props[ext_prop_name]
-                    setattr(ext[0](), ext[1], key_values[key])
+                    self.setattr(ext[0](), ext[1], key_values[key], weight_override)
                 else:
-                    setattr(context.scene.Transhuman_tool, key, key_values[key])
+                    self.setattr(context.scene.Transhuman_tool, key, key_values[key], weight_override)
             except TypeError as e:
                 print(e)
             except KeyError as e:
                 print(e)
+    
+    def setattr(self, obj, key, value, weight_override):
+        # if the weight is 0, we don't change the value
+        if weight_override == 0:
+            return
+        # if the weight is 1, we replace the value
+        elif weight_override == 1:
+            setattr(obj, key, value)
+            return
+        # if the weight is between 0 and 1, we interpolate the value
+        else:
+            current = getattr(obj, key, None)
+            # if the value is number, we interpolate it
+            if type(value) is int or type(value) is float:
+                # if the current value is None, it is considered as 0
+                if current is None:
+                    current = 0
+                setattr(obj, key, current + (value - current) * weight_override)
+                return
+            # if the value is a list or tuple, we interpolate each value
+            elif type(value) is list or type(value) is tuple:
+                # if the current value is None, it is considered as 0
+                if current is None:
+                    current = [0] * len(value)
+                setattr(obj, key, [current[i] + (value[i] - current[i]) * weight_override for i in range(len(current))])
+                return
+            # if the value is a dict, we interpolate each value
+            elif type(value) is dict:
+                # if the current value is None, it is considered as 0
+                if current is None:
+                    current = {k: 0 for k in value}
+                setattr(obj, key, {k: current[k] + (value[k] - current[k]) * weight_override for k in current})
+                return
+            # for other types, we replace the value if the weight is more than 0.5, otherwise we don't change it
+            else:
+                if weight_override > 0.5:
+                    setattr(obj, key, value)
+                return
 
     def randomize(self, context, randomize_mode='Standard'):
         extremity = getattr(context.scene.Transhuman_tool, "random_extremity", None)
@@ -139,6 +180,11 @@ class PresetSaver:
     def randomize_from_preset(self, context, name, randomize_mode='Standard'):
         self.load(context, name)
         self.randomize(context, randomize_mode)
+    
+    def conceive_from_presets(self, context, name_a, name_b, weight_b):
+        self.load(context, name_a)
+        self.load(context, name_b, weight_b)
+        self.set_selected_preset(context, name_a + ' x ' + name_b)
 
     def get_saved_presets(self):
         preset_path = self.get_presets_path()

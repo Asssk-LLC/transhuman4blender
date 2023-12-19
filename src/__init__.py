@@ -2561,17 +2561,17 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         ],
     )
 
-    lip_crease_top: create_linked_props(
+    lip_crease_top: create_pos_neg_shape_key_prop_multi(
         "lip_crease_top",
         [
-            ["Transhuman Keys Rest", "Top Lip Crease"],
+            ["Transhuman Keys Rest", "Top Lip Crease +", "Top Lip Crease"],
         ],
     )
 
-    lip_crease_bottom: create_linked_props(
+    lip_crease_bottom: create_pos_neg_shape_key_prop_multi(
         "lip_crease_bottom",
         [
-            ["Transhuman Keys Rest", "Bottom Lip Crease"],
+            ["Transhuman Keys Rest", "Bottom Lip Crease +", "Bottom Lip Crease"],
         ],
     )
 
@@ -3036,6 +3036,8 @@ class TRANSHUMAN_OT_LOAD_ORIGINAL_COLLECTION(Operator):
         with bpy.data.libraries.load(str(path.absolute())) as (data_from, data_to):
             data_to.collections.append(th4b_collection_name)
             data_to.images = data_from.images
+            data_to.node_groups = ['SM5 Freckles 1 Scars']
+            data_to.actions = data_from.actions
 
         collection = bpy.data.collections.get(th4b_collection_name)
         bpy.ops.outliner.collection
@@ -3907,11 +3909,11 @@ class TRANSHUMAN_PT_MOUTH_SHAPE(TranshumanPanel, bpy.types.Panel):
 
         row = layout.row()
         row.column().label(text="Top Lip Crease:")
-        row.column().prop(context.scene.Transhuman_tool, "lip_crease_top", text="+")
+        row.column().prop(context.scene.Transhuman_tool, "lip_crease_top", text="±")
 
         row = layout.row()
         row.column().label(text="Bottom Lip Crease:")
-        row.column().prop(context.scene.Transhuman_tool, "lip_crease_bottom", text="+")
+        row.column().prop(context.scene.Transhuman_tool, "lip_crease_bottom", text="±")
 
         row = layout.row()
         row.column().label(text="Philtrum Width:")

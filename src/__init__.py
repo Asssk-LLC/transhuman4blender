@@ -3121,6 +3121,8 @@ class TRANSHUMAN_OT_LOAD_ORIGINAL_COLLECTION(Operator):
         bpy.ops.outliner.collection
         bpy.context.scene.collection.children.link(collection)
 
+        presetSaver.load(context, 'SM5_ZERO')
+
         return {"FINISHED"}
 
 class TRANSHUMAN_OT_OPEN_SET_IMAGE(Operator, ImportHelper):

@@ -249,7 +249,7 @@
     "imported_persona_displ": "SM5 Default Female Displacement",
     "persona_displ_value": null,
     "original_face_displ": null,
-    "imported_persona_mesh": "",
+    "imported_persona_mesh": "SM5 Persona - ZERO",
     "imported_persona_skin": "SM5 Transhuman Skin",
     "persona_switch": false,
     "clothes_adjust_switch": false,

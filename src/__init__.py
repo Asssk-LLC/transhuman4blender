@@ -4,10 +4,10 @@ bl_info = {
     "name": 'Transhuman4Blender',
     "description": "Character generator for Blender",
     "author": "SM5 by Heledahn",
-    "version": (0, 0, 1),
-    "blender": (3, 5, 0),
+    "version": (1, 0, 0),
+    "blender": (3, 6, 0),
     "location": "3D View > Tools",
-    "wiki_url": "https://sm5.heledahn.com/",
+    "wiki_url": "https://sm5.heledahn.com/pages/transhuman-wiki",
     "tracker_url": "",
     "category": "Object",
 }
@@ -96,6 +96,7 @@ presetSaver = preset_saver.PresetSaver(
         "eyeball_height",
         "eyeball_depth",
         "eyeball_closeness",
+        "eyeball_size",
         "eye_up",
         "eye_down",
         "eye_length",
@@ -288,6 +289,7 @@ presetSaver = preset_saver.PresetSaver(
         "imported_persona_displ",
         "persona_displ_value",
         "original_face_displ",
+        "flip_displ_switch",
         "imported_persona_mesh",
         "imported_persona_skin",
         "persona_switch",
@@ -580,7 +582,7 @@ presetSaver = preset_saver.PresetSaver(
         "head_width": [-1, 1],
         "cheeks_plus_minus": [-1, 1],
         "cheeks_hollow": [0, 1],
-        "chin_position": [-1, 1],
+        "chin_position": [0, 1],
         "cleft_chin": [0, 1],
         "chin_height": [-1, 1],
         "chin_width": [-1, 1],
@@ -713,6 +715,36 @@ def set_selected_node_group(self, prop_name, material, node):
         getattr(self, prop_name)
     ]
 
+def create_image_select_multi(
+    prop_name,
+    targets,
+    image_prefix=None,
+    image_suffix=None,
+    description="Select base color"
+):
+    def handle_target(self, target):
+        if "material" in target and "node" in target:
+            return set_selected_image(self, prop_name, target['material'], target['node'])
+        elif "node_group_name" in target and "node_name" in target:
+            return set_selected_image_node_group(
+                self, prop_name, target['node_group_name'], target['node_name']
+            )
+
+    update = lambda self, context: None if [
+        handle_target(self, target) for target in targets
+    ] else None
+
+    return bpy.props.EnumProperty(
+        items=lambda self, context: [
+            (image.name, image.name, image.name)
+            for image in bpy.data.images
+            if (image_prefix is None or image.name.startswith(image_prefix))
+            and (image_suffix is None or image.name.endswith(image_suffix))
+        ],
+        description=description,
+        update=update,
+    )
+
 def create_image_select(
     prop_name,
     material=None,
@@ -839,7 +871,7 @@ def set_subdivision_level_value(level_value, for_render):
     level_prop = "render_levels" if for_render else "levels"
     setattr(bpy.data.objects["SM5 Transhuman"].modifiers["Subdivision"], level_prop, level_value)
     levels = ['LV0', 'LV1', 'LV2', 'LV3']
-    objects = ['SM5 Transhuman Underwear Top', 'SM5 Transhuman Underwear Bottom', 'SM5 Eyebrows Transhuman']
+    objects = ['SM5 Transhuman Underwear Top', 'SM5 Transhuman Underwear Bottom', 'SM5 Scalp Transhuman']
 
     show_prop = "show_render" if for_render else "show_viewport"
     for object in objects:
@@ -954,6 +986,9 @@ def set_persona_switch_value(self, context):
     bpy.data.node_groups["SM5 Body Displacement"].nodes[
         "persona_displ_val"
     ].mute = not self.persona_switch
+    bpy.data.materials["SM5 Skin Material Transhuman"].node_tree.nodes[
+        "persona_displ_skin_mute"
+    ].mute = not self.persona_switch
 
 def set_clothes_adjust_switch_value(self, context):
     bpy.data.node_groups["SM5 Face Customization Import"].nodes[
@@ -964,14 +999,14 @@ def set_hide_armatures_value(self, context):
     bpy.data.collections["Transhuman - RIGS"].hide_viewport = self.hide_armatures
 
 def set_hide_body_hairs_value(self, context):
-    bpy.data.collections["Transhuman - BODY HAIR"].hide_viewport = self.hide_body_hairs
+    bpy.data.collections["BODY HAIR CURVES"].hide_viewport = self.hide_body_hairs
 
 def set_hide_hair_wig_value(self, context):
-    bpy.data.collections["Transhuman - HAIR WIG"].hide_viewport = self.hide_hair_wig
+    bpy.data.collections["WIGS"].hide_viewport = self.hide_hair_wig
 
 def set_hide_render_hair_wig_value(self, context):
     bpy.data.collections[
-        "Transhuman - HAIR WIG"
+        "WIGS"
     ].hide_render = self.hide_render_hair_wig
 
 def set_face_prop_value(self, context):
@@ -1007,6 +1042,11 @@ def set_subdermal_switch_value(self, context):
     bpy.data.materials["SM5 Skin Material Transhuman"].node_tree.nodes[
         "subdermal_dynamic"
     ].mute = not self.subdermal_switch
+
+def set_flip_displ_switch_value(self, context):
+    bpy.data.node_groups["SM5 Transhuman Normal"].nodes[
+        "flip_persona_displ"
+    ].mute = not self.flip_displ_switch
 
 def set_stubble_switch_value(self, context):
     bpy.data.materials["SM5 Skin Material Transhuman"].node_tree.nodes[
@@ -1492,6 +1532,11 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         update=lambda self, context: set_subdermal_switch_value(self, context),
     )
 
+    flip_displ_switch: bpy.props.BoolProperty(
+        name="Only Face / Body",
+        update=lambda self, context: set_flip_displ_switch_value(self, context),
+    )
+
     stubble_switch: bpy.props.BoolProperty(
         name="On / Off",
         update=lambda self, context: set_stubble_switch_value(self, context),
@@ -1611,12 +1656,20 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         description="Select Skin",
     )
 
-    imported_persona_displ: create_image_select(
+    imported_persona_displ: create_image_select_multi(
         "imported_persona_displ",
         image_suffix="Displacement",
-        node_group_name="SM5 Body Displacement",
-        node_name="persona_displ",
         description="Select Displacement",
+        targets=[
+            {
+                "material": "SM5 Skin Material Transhuman",
+                "node": "persona_displ_skin",
+            },
+            {
+                "node_group_name": "SM5 Body Displacement",
+                "node_name": "persona_displ",
+            }
+        ]
     )
 
     male_base: create_linked_props(
@@ -2056,6 +2109,13 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         "eyeball_depth",
         [
             ["Eye Shape Keys Transhuman", "Eyeball Front", "Eyeball Back"],
+        ],
+    )
+
+    eyeball_size: create_pos_neg_shape_key_prop_multi(
+        "eyeball_size",
+        [
+            ["Eye Shape Keys Transhuman", "Eyeball Size +", "Eyeball Size -"],
         ],
     )
 
@@ -3763,7 +3823,10 @@ class TRANSHUMAN_PT_EYE_SHAPE(TranshumanPanel, bpy.types.Panel):
         row.column().prop(
             context.scene.Transhuman_tool, "eyeball_closeness", text="Eyeball Closeness ±"
         )
-        row.column().label(text="")
+        row.column().prop(
+            context.scene.Transhuman_tool, "eyeball_size", text="Eyeball Size ±"
+        )
+
 
 class TRANSHUMAN_PT_BROW_SHAPE(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_FACE"
@@ -4165,9 +4228,14 @@ class TRANSHUMAN_PT_PERSONA(TranshumanPanel, bpy.types.Panel):
 
         row = box.row()
         row.column().label(text="", icon="BLANK1")
-        row.column().label(text="Blend Original Face Features")
+        row.column().label(text="Blend Original Displacement")
         row.column().preset_prop("original_face_displ", text=""
         )
+
+        row = box.row()
+        row.column().label(text="", icon="BLANK1")
+        row.column().label(text="")
+        row.column().prop(context.scene.Transhuman_tool, "flip_displ_switch")
 
         row = box.row()
         row.column().label(text="", icon="BLANK1")
@@ -4312,10 +4380,7 @@ class TRANSHUMAN_PT_MODIFIERS(TranshumanPanel, bpy.types.Panel):
                 "transhuman_operators.bind_mesh", text="BIND",
             )
 
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row = box.row()
-        row = box.row()      
+        row = box.row() 
         row.column().label(icon="BLANK1")
         row.column().label(
             text="Bind in T-Pose before render", icon="INFO"

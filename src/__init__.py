@@ -33,6 +33,7 @@ from bpy.types import (
 from bpy_extras.io_utils import ImportHelper
 
 from pathlib import Path
+from itertools import chain
 
 # fmt: off
 presetSaver = preset_saver.PresetSaver(
@@ -3111,6 +3112,13 @@ class TRANSHUMAN_OT_LOAD_ORIGINAL_COLLECTION(Operator):
 
     def execute(self, context):
         path = sm5_addon_utils.get_addon_root(addon_name=addon_name) / 'assets' / 'SM5 Transhuman.blend'
+        current_datablocks = set()
+
+        # for now we are only insterested in materials and images.
+        get_targets = lambda: chain(bpy.data.materials, bpy.data.images)
+        for datablock in get_targets():
+            current_datablocks.add(datablock.name)
+
         with bpy.data.libraries.load(str(path.absolute())) as (data_from, data_to):
             data_to.collections.append(th4b_collection_name)
             data_to.images = data_from.images
@@ -3120,6 +3128,11 @@ class TRANSHUMAN_OT_LOAD_ORIGINAL_COLLECTION(Operator):
         collection = bpy.data.collections.get(th4b_collection_name)
         bpy.ops.outliner.collection
         bpy.context.scene.collection.children.link(collection)
+
+        for datablock in get_targets():
+            # add fake user to the newly added ones
+            if datablock.name not in current_datablocks:
+                datablock.use_fake_user = True
 
         presetSaver.load(context, 'SM5_ZERO')
 

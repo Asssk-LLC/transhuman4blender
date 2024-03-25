@@ -670,10 +670,45 @@ presetSaver = preset_saver.PresetSaver(
 )
 #fmt: on
 
+hair_attrs = [
+    'hide_hair_wig',
+    'hide_render_hair_wig',
+    'scalp_color',
+    'scalp_fade',
+    'hair_color_picker',
+    'root_switch',
+    'root_color_picker',
+    'root_spread_0',
+    'root_spread_1',
+    'root_invert',
+    'highlights_switch',
+    'secondary_color_highlights',
+    'secondary_intensity_1',
+    'hair_mesh_curve',
+    'hair_spread',
+    'root_puff',
+    'hair_clump_switch',
+    'hair_clump_shape',
+    'hair_random_length',
+    'hair_resolution',
+    'hair_curls_switch',
+    'curl_clump_mode',
+    'gravity_clump',
+    'curl_amplitude',
+    'curl_frequency',
+    'curls_randomize',
+    'waves_curls_switch',
+    'curl_scale',
+    'curl_resolution',
+    'loose_hair_decimate',
+    'loose_hair_amount',
+    'loose_hair_spread',
+    'loose_hairs_frizz',
+]
+
 def preset_prop(self, name, **kwargs):
     args = presetSaver.get_ext_prop(name)
     return self.prop(args[0](), args[1], **kwargs)
-
 
 setattr(UILayout, "preset_prop", preset_prop)
 
@@ -3134,6 +3169,7 @@ class TRANSHUMAN_OT_LOAD_ORIGINAL_COLLECTION(Operator):
             if datablock.name not in current_datablocks:
                 datablock.use_fake_user = True
 
+        setattr(context.scene.Transhuman_tool, 'saved_presets', 'SM5_ZERO')
         presetSaver.load(context, 'SM5_ZERO')
 
         return {"FINISHED"}
@@ -3186,6 +3222,15 @@ class TRANSHUMAN_OT_LOAD_PRESET(TRANSHUMAN_OT_CONFIRM):
 
     def execute(self, context):
         presetSaver.load(context, context.scene.Transhuman_tool.saved_presets)
+
+        return {"FINISHED"}
+    
+class TRANSHUMAN_OT_LOAD_PRESET_HAIR(TRANSHUMAN_OT_CONFIRM):
+    bl_idname = "transhuman_operators.load_preset_hair"
+    bl_label = "This will overwrite the current settings for the wig."
+
+    def execute(self, context):
+        presetSaver.load_selected(context, context.scene.Transhuman_tool.saved_presets, hair_attrs)
 
         return {"FINISHED"}
 
@@ -3369,8 +3414,12 @@ class TRANSHUMAN_PT_MAIN(TranshumanRootPanel, bpy.types.Panel):
 
         row = box.row()
         row.column().prop(context.scene.Transhuman_tool, "saved_presets", text="")
-        row.column().operator(
+        col = row.column()
+        col.row().operator(
             "transhuman_operators.load_preset", text="LOAD", icon="FILE"
+        )
+        col.row().operator(
+            "transhuman_operators.load_preset_hair", text="LOAD WIG", icon="FILE"
         )
 
 class TRANSHUMAN_PT_RIG(TranshumanPanel, bpy.types.Panel):
@@ -5980,6 +6029,7 @@ classes = (
     TRANSHUMAN_OT_OPEN_SET_IMAGE,
     TRANSHUMAN_OT_SAVE_PRESET,
     TRANSHUMAN_OT_LOAD_PRESET,
+    TRANSHUMAN_OT_LOAD_PRESET_HAIR,
     TRANSHUMAN_OT_RANDOMIZE_PRESET,
     TRANSHUMAN_OT_RANDOMIZE_FROM_PRESET,
     TRANSHUMAN_OT_CONCEIVE_FROM_PRESETS,

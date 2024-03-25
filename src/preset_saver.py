@@ -52,11 +52,14 @@ class PresetSaver:
         setattr(context.scene.Transhuman_tool, "preset_name", name)
 
     def load(self, context, name, weight_override=1):
+        return self.load_selected(context, name, None, weight_override)
+    
+    def load_selected(self, context, name, selected_attrs, weight_override=1):
         preset_name = self.get_preset_name(name)
         try:
             with open(self.get_presets_path() / preset_name, "r") as f:
                 loaded = json.load(f)
-                self.setattrs(loaded, context, weight_override)
+                self.setattrs(loaded, context, weight_override, exclusively=selected_attrs)
             
             self.set_selected_preset(context, name)
         except FileNotFoundError:
@@ -80,15 +83,30 @@ class PresetSaver:
 
         return getattr(obj, real_key)
 
-    def setattrs(self, key_values, context, weight_override=1):
+    def setattrs(self, key_values, context, weight_override=1, exclusively=None):
         for key in key_values:
             try:
+                target_properties = None
+                prop_name = None
+                prop_value = None
                 if key.startswith(self.ext_prop_prefix):
                     ext_prop_name = key[len(self.ext_prop_prefix) :]
+                    # if exclusively is set, we only set the properties in the list
+                    if exclusively is not None and ext_prop_name not in exclusively:
+                        continue
                     ext = self.ext_props[ext_prop_name]
-                    self.setattr(ext[0](), ext[1], key_values[key], weight_override)
+                    target_properties = ext[0]()
+                    prop_name = ext[1]
+                    prop_value = key_values[key]
                 else:
-                    self.setattr(context.scene.Transhuman_tool, key, key_values[key], weight_override)
+                    target_properties = context.scene.Transhuman_tool
+                    prop_name = key
+                    prop_value = key_values[key]
+                    # if exclusively is set, we only set the properties in the list
+                    if exclusively is not None and prop_name not in exclusively:
+                        continue
+
+                self.setattr(target_properties, prop_name, prop_value, weight_override)
             except TypeError as e:
                 print(e)
             except KeyError as e:

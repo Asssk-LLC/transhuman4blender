@@ -4,7 +4,7 @@ bl_info = {
     "name": 'Transhuman4Blender',
     "description": "Character generator for Blender",
     "author": "SM5 by Heledahn",
-    "version": (1, 0, 0),
+    "version": (1, 1, 0),
     "blender": (3, 6, 0),
     "location": "3D View > Tools",
     "wiki_url": "https://sm5.heledahn.com/pages/transhuman-wiki",

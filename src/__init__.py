@@ -115,6 +115,8 @@ presetSaver = preset_saver.PresetSaver(
         "eyebrows_arch",
         "eyebrows_rotate",
         "eyebrows_dist",
+        "eyebrow_ridge",
+        "smolder",
         "fem_face_1",
         "fem_face_2",
         "fem_face_3",
@@ -148,9 +150,13 @@ presetSaver = preset_saver.PresetSaver(
         "chin_height",
         "chin_width",
         "jaw_width",
+        "jaw_position",
         "jaw_length",
         "neck_girth",
+        "neck_length",
+        "jowl",
         "glabella",
+        "glabella_length",
         "bridge",
         "bridge_width",
         "supratip",
@@ -160,6 +166,7 @@ presetSaver = preset_saver.PresetSaver(
         "infratip",
         "infratip_thickness",
         "wings",
+        "wings_z",
         "wings_arch",
         "nose_cleft",
         "nose_length",
@@ -185,6 +192,10 @@ presetSaver = preset_saver.PresetSaver(
         "lip_crease_bottom",
         "top_lip",
         "bottom_lip",
+        "top_lip_position",
+        "bottom_lip_position",
+        "mouth_corners",
+        "orbicularis",
         "ear_in",
         "ear_out",
         "ear_pointy",
@@ -192,10 +203,13 @@ presetSaver = preset_saver.PresetSaver(
         "ear_height",
         "ear_depth",
         "ear_size",
+        "earlobe",
         "breasts",
         "breasts_down",
         "breasts_push",
         "shoulders",
+        "thighs",
+        "arms",
         "buttocks",
         "nipples",
         "waist",
@@ -284,9 +298,11 @@ presetSaver = preset_saver.PresetSaver(
         "secondary_body_hair_switch",
         "secondary_beard_switch",
         "highlights_switch",
+        "scalp_direct_switch",
         "root_switch",
         "root_invert",
         "mesh_thickness",
+        "mesh_duplicates_clump_switch",
         "imported_persona_displ",
         "persona_displ_value",
         "original_face_displ",
@@ -297,6 +313,7 @@ presetSaver = preset_saver.PresetSaver(
         "clothes_adjust_switch",
         "hide_hair_wig",
         "hide_render_hair_wig",
+        "scalp_selector",
         "dynamic_breasts",
         "dynamic_wrinkles",
     ],
@@ -304,6 +321,7 @@ presetSaver = preset_saver.PresetSaver(
         "smooth_custom":  [ lambda: bpy.data.objects["SM5 Rest Pose Transhuman"].modifiers[ "Smooth Custom"], "iterations", ],
         "scalp_color":  [ lambda: bpy.data.materials["SM5 Scalp Material Transhuman" ].node_tree.nodes["scalp_color" ].outputs[0], "default_value", ],
         "scalp_fade":  [ lambda: bpy.data.materials["SM5 Scalp Material Transhuman" ].node_tree.nodes["scalp_fade" ].inputs[1], "default_value", ],
+        "scalp_hair_bump":  [ lambda: bpy.data.materials["SM5 Scalp Material Transhuman"].node_tree.nodes["scalp_hair_bump"].inputs[0], "default_value", ],
         "hair_mesh_curve": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["hair_mesh_curve"].inputs[1],"default_value",],
         "hair_spread": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["hair_spread"].outputs[0],"default_value",],
         "root_puff": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["root_puff"].inputs[3],"default_value",],
@@ -334,8 +352,11 @@ presetSaver = preset_saver.PresetSaver(
         "mesh_hair_subdivision": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["mesh_hair_subdivision"],"integer",],
         "feigned_uv_curls": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["feigned_uv_curls"].inputs[0],"default_value",],
         "tubes_amplitude": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["tubes_amplitude"].outputs[0],"default_value",],
+        "mesh_hair_amount": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["mesh_hair_amount"].inputs[2],"default_value",],
+        "mesh_hair_spread": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["mesh_hair_spread"].outputs[0],"default_value",],                         
         "inherit_curve_curls": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["inherit_curve_curls"].inputs[1],"default_value",],
         "random_direction_mesh": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["random_direction_mesh"].inputs[0],"default_value",],
+        "smooth_hair_mesh": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["smooth_hair_mesh"],"boolean",],
         "mesh_loose_hairs": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["mesh_loose_hairs"].inputs[0],"default_value",],
         "mesh_loose_resample": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["mesh_loose_resample"],"integer",],
         "loose_hair_size": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["loose_hair_size"].outputs[0],"default_value",],
@@ -582,15 +603,17 @@ presetSaver = preset_saver.PresetSaver(
         "head_size": [-1, 1],
         "head_width": [-1, 1],
         "cheeks_plus_minus": [-1, 1],
-        "cheeks_hollow": [0, 1],
-        "chin_position": [0, 1],
+        "cheeks_hollow": [0, 2],
+        "chin_position": [0, 2],
         "cleft_chin": [0, 1],
         "chin_height": [-1, 1],
         "chin_width": [-1, 1],
         "chin_vertical": [-1, 1],
         "jaw_width": [-1, 1],
+        "jaw_position": [-1, 1],
         "jaw_length": [-1, 1],
         "neck_girth": [-1, 1],
+        "neck_length": [-1, 1],
         "jowl": [-1, 1],
         "eye_grow": [0, 1],
         "eye_shrink": [0, 1],
@@ -615,7 +638,10 @@ presetSaver = preset_saver.PresetSaver(
         "eyebrows_arch": [-1, 1],
         "eyebrows_rotate": [-1, 1],
         "eyebrows_dist": [-1, 1],
+        "smolder": [0, 1],
+        "eyebrow_ridge": [0, 1],
         "glabella": [-1, 1],
+        "glabella_length": [0, 1],
         "bridge": [-1, 1],
         "bridge_width": [-1, 1],
         "supratip": [-1, 1],
@@ -627,6 +653,7 @@ presetSaver = preset_saver.PresetSaver(
         "infratip": [-1, 1],
         "infratip_thickness": [-1, 1],
         "wings": [-1, 1],
+        "wings_z": [-1, 1],
         "wings_arch": [-1, 1],
         "nose_cleft": [0, 1],
         "nose_length": [-1, 1],
@@ -640,6 +667,8 @@ presetSaver = preset_saver.PresetSaver(
         "lips_thickness": [-1, 1],
         "top_lip": [-1, 1],
         "bottom_lip": [-1, 1],
+        "top_lip_position": [-1, 1],
+        "bottom_lip_position": [-1, 1],
         "lip_top_border": [-1, 1],
         "lip_cupids_bow": [-1, 1],
         "lip_bottom_border": [-1, 1],
@@ -650,11 +679,14 @@ presetSaver = preset_saver.PresetSaver(
         "philtrum": [-1, 1],
         "lip_crease_top": [0, 1],
         "lip_crease_bottom": [0, 1],
+        "mouth_corners": [-1, 1],
+        "orbicularis": [0, 1],
         "ear_in": [0, 1],
         "ear_out": [0, 1],
         "ear_height": [-0.3, 0.3],
         "ear_depth": [-1, 1],
         "ear_size": [-1, 1],
+        "earlobe": [-1, 1],
         "ear_back": [0, 0.5],
         "ear_pointy": [0, 1],
     },
@@ -671,10 +703,11 @@ presetSaver = preset_saver.PresetSaver(
 #fmt: on
 
 hair_attrs = [
-    'hide_hair_wig',
-    'hide_render_hair_wig',
     'scalp_color',
     'scalp_fade',
+    'scalp_selector',
+    'scalp_hair_bump',
+    'scalp_direct_switch',
     'hair_color_picker',
     'root_switch',
     'root_color_picker',
@@ -1238,6 +1271,14 @@ def set_highlights_switch_value(self, context):
     bpy.data.materials["SM5 Hair Particle Material"].node_tree.nodes[
         "secondary_color_mute"
     ].mute = not self.highlights_switch
+    bpy.data.materials["SM5 Scalp Material Transhuman"].node_tree.nodes[
+        "secondary_color_mute"
+    ].mute = not self.highlights_switch
+
+def set_scalp_direct_switch_value(self, context):
+    bpy.data.materials["SM5 Scalp Material Transhuman"].node_tree.nodes[
+        "scalp_color_direct_mute"
+    ].mute = not self.scalp_direct_switch
 
 def set_root_switch_value(self, context):
     bpy.data.materials["SM5 Hair Mesh Material"].node_tree.nodes[
@@ -1253,6 +1294,9 @@ def set_root_switch_value(self, context):
         "root_mute"
     ].mute = not self.root_switch
     bpy.data.materials["SM5 Hair Particle Material"].node_tree.nodes[
+        "root_mute"
+    ].mute = not self.root_switch
+    bpy.data.materials["SM5 Scalp Material Transhuman"].node_tree.nodes[
         "root_mute"
     ].mute = not self.root_switch
 
@@ -1274,6 +1318,9 @@ def set_mesh_thickness_value(self,context):
     bpy.data.materials["SM5 Hair Mesh Short Material"].node_tree.nodes[
         "mesh_thickness"
     ].inputs[1].default_value = self.mesh_thickness
+
+def set_mesh_duplicates_clump_switch_value(self, context):
+    bpy.data.node_groups["SM5 Hair"].nodes["mesh_duplicates_clump"].mute = not self.mesh_duplicates_clump_switch
 
 def refresh_gender_definition(context):
     f_base = context.scene.Transhuman_tool["female_base"]
@@ -1595,9 +1642,22 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         description="Select scars",
     )
 
-    tattoo_switch: bpy.props.BoolProperty(
-        name="Tattoo",
-        update=lambda self, context: set_tattoo_switch_value(self, context),
+    scalp_selector: create_node_group_select(
+        "scalp_selector",
+        prefix="SM5 Scalp -",
+        material="SM5 Scalp Material Transhuman",
+        node="scalp_selector",
+        description="Select scalp type",
+    )
+
+    eyebrows_switch: bpy.props.BoolProperty(
+        name="Eyebrows",
+        update=lambda self, context: set_eyebrows_switch_value(self, context),
+    )
+
+    mesh_duplicates_clump_switch: bpy.props.BoolProperty(
+        name="Clump Duplicates",
+        update=lambda self, context: set_mesh_duplicates_clump_switch_value(self, context),
     )
 
     base_switch: bpy.props.BoolProperty(
@@ -2267,6 +2327,20 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         ],
     )
 
+    eyebrow_ridge: create_linked_props(
+        "eyebrow_ridge",
+        [
+            ["Transhuman Keys Rest", "Eyebrow Ridge"],
+        ],
+    )
+
+    smolder: create_linked_props(
+        "smolder",
+        [
+            ["Transhuman Keys Rest", "Smolder"],
+        ],
+    )
+
     fem_face_1: create_linked_props(
         "fem_face_1",
         [
@@ -2386,6 +2460,7 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         [
             ["Transhuman Keys Rest", "Hollow Cheeks"],
         ],
+        max=2
     )
 
     cleft_chin: create_linked_props(
@@ -2400,6 +2475,7 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         [
             ["Transhuman Keys Rest", "Chin +", "Chin -"],
         ],
+        max=2
     )
 
     chin_vertical: create_pos_neg_shape_key_prop_multi(
@@ -2430,6 +2506,13 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         ],
     )
 
+    jaw_position: create_pos_neg_shape_key_prop_multi(
+        "jaw_position",
+        [
+            ["Transhuman Keys Rest", "Jaw Position +", "Jaw Position -"],
+        ],
+    )
+
     jaw_length: create_pos_neg_shape_key_prop_multi(
         "jaw_length",
         [
@@ -2451,10 +2534,24 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         ],
     )
 
+    neck_length: create_pos_neg_shape_key_prop_multi(
+        "neck_length",
+        [
+            ["Transhuman Keys Rest", "Neck Length +", "Neck Length -"],
+        ],
+    )
+
     glabella: create_pos_neg_shape_key_prop_multi(
         "glabella",
         [
             ["Transhuman Keys Rest", "Glabella out", "Glabella in"],
+        ],
+    )
+
+    glabella_length: create_linked_props(
+        "glabella_length",
+        [
+            ["Transhuman Keys Rest", "Glabella Length"],
         ],
     )
 
@@ -2505,6 +2602,7 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         [
             ["Transhuman Keys Rest", "Infratip up", "Infratip down"],
         ],
+        max=2
     )
 
     infratip_thickness: create_pos_neg_shape_key_prop_multi(
@@ -2518,6 +2616,13 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         "wings",
         [
             ["Transhuman Keys Rest", "Wings up", "Wings down"],
+        ],
+    )
+
+    wings_z: create_pos_neg_shape_key_prop_multi(
+        "wings_z",
+        [
+            ["Transhuman Keys Rest", "Wing Z +", "Wing Z -"],
         ],
     )
 
@@ -2561,6 +2666,7 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         [
             ["Transhuman Keys Rest", "Nose tip chisel +", "Nose tip chisel -"],
         ],
+        max=2
     )
 
     nose_position: create_pos_neg_shape_key_prop_multi(
@@ -2606,6 +2712,7 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
             ["Transhuman Keys Rest", "Mouth width +", "Mouth width -"],
             ["Teeth Shape Keys", "Mouth width +", "Mouth width -"],
         ],
+        max=2
     )
 
     lips_thickness: create_pos_neg_shape_key_prop_multi(
@@ -2655,6 +2762,7 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         [
             ["Transhuman Keys Rest", "Philtrum +", "Philtrum -"],
         ],
+        max=2
     )
 
     lip_crease_top: create_pos_neg_shape_key_prop_multi(
@@ -2692,10 +2800,38 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         ],
     )
 
+    top_lip_position: create_pos_neg_shape_key_prop_multi(
+        "top_lip_position",
+        [
+            ["Transhuman Keys Rest", "Top Lip Position +", "Top Lip Position -"],
+        ],
+    )
+
     bottom_lip: create_pos_neg_shape_key_prop_multi(
         "bottom_lip",
         [
             ["Transhuman Keys Rest", "Bottom Lip +", "Bottom Lip -"],
+        ],
+    )
+
+    bottom_lip_position: create_pos_neg_shape_key_prop_multi(
+        "bottom_lip_position",
+        [
+            ["Transhuman Keys Rest", "Bottom Lip Position +", "Bottom Lip Position -"],
+        ],
+    )
+
+    mouth_corners: create_pos_neg_shape_key_prop_multi(
+        "mouth_corners",
+        [
+            ["Transhuman Keys Rest", "Mouth Corners +", "Mouth Corners -"],
+        ],
+    )
+
+    orbicularis: create_linked_props(
+        "orbicularis",
+        [
+            ["Transhuman Keys Rest", "Orbicularis Oris"],
         ],
     )
 
@@ -2748,10 +2884,31 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         ],
     )
 
+    earlobe: create_pos_neg_shape_key_prop_multi(
+        "earlobe",
+        [
+            ["Transhuman Keys Rest", "Earlobe +", "Earlobe -"],
+        ],
+    )
+
     shoulders: create_pos_neg_shape_key_prop_multi(
         "shoulders",
         [
             ["Transhuman Keys Rest", "Shoulders +", "Shoulders -"],
+        ],
+    )
+
+    arms: create_pos_neg_shape_key_prop_multi(
+        "arms",
+        [
+            ["Transhuman Keys Rest", "Arm Girth +", "Arm Girth -"],
+        ],
+    )
+
+    thighs: create_pos_neg_shape_key_prop_multi(
+        "thighs",
+        [
+            ["Transhuman Keys Rest", "Thigh Girth +", "Thigh Girth -"],
         ],
     )
 
@@ -3083,6 +3240,11 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         update=lambda self, context: set_highlights_switch_value(self, context),
     )
 
+    scalp_direct_switch: bpy.props.BoolProperty(
+        name="Single Color (removes Highlights & Root)",
+        update=lambda self, context: set_scalp_direct_switch_value(self, context),
+    )
+
     root_switch: bpy.props.BoolProperty(
         name="Color Root",
         update=lambda self, context: set_root_switch_value(self, context),
@@ -3412,15 +3574,15 @@ class TRANSHUMAN_PT_MAIN(TranshumanRootPanel, bpy.types.Panel):
             "transhuman_operators.save_preset", text="SAVE", icon="FILE"
         )
 
+        box = layout.box()
+
         row = box.row()
         row.column().prop(context.scene.Transhuman_tool, "saved_presets", text="")
         col = row.column()
         col.row().operator(
             "transhuman_operators.load_preset", text="LOAD", icon="FILE"
         )
-        col.row().operator(
-            "transhuman_operators.load_preset_hair", text="LOAD WIG", icon="FILE"
-        )
+    
 
 class TRANSHUMAN_PT_RIG(TranshumanPanel, bpy.types.Panel):
     bl_idname = "TRANSHUMAN_PT_RIG"
@@ -3811,6 +3973,10 @@ class TRANSHUMAN_PT_JAW_SHAPE(TranshumanPanel, bpy.types.Panel):
         row.column().prop(context.scene.Transhuman_tool, "jaw_width", text="Width ±")
         row.column().prop(context.scene.Transhuman_tool, "jaw_length", text="Length ±")
 
+        row = layout.row()
+        row.column().prop(context.scene.Transhuman_tool, "jaw_position", text="Position ±")
+        row.column().label(text="")
+
 class TRANSHUMAN_PT_NECK_SHAPE(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_FACE"
     bl_label = "Neck"
@@ -3820,7 +3986,11 @@ class TRANSHUMAN_PT_NECK_SHAPE(TranshumanPanel, bpy.types.Panel):
 
         row = layout.row()
         row.column().prop(context.scene.Transhuman_tool, "neck_girth", text="Girth ±")
+        row.column().prop(context.scene.Transhuman_tool, "neck_length", text="Length ±")
+        row = layout.row()
         row.column().prop(context.scene.Transhuman_tool, "jowl", text="Jowl ±")
+        row.column().label(text="")
+
 
 class TRANSHUMAN_PT_EYE_SHAPE(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_FACE"
@@ -3904,23 +4074,19 @@ class TRANSHUMAN_PT_BROW_SHAPE(TranshumanPanel, bpy.types.Panel):
         row.column().prop(context.scene.Transhuman_tool, "eyebrows_down", text="Lower")
 
         row = layout.row()
-        row.column().prop(
-            context.scene.Transhuman_tool, "eyebrows_head", text="Head up"
-        )
-        row.column().prop(
-            context.scene.Transhuman_tool, "eyebrows_tail", text="Tail up"
-        )
+        row.column().prop(context.scene.Transhuman_tool, "eyebrows_head", text="Head up")
+        row.column().prop(context.scene.Transhuman_tool, "eyebrows_tail", text="Tail up")
 
         row = layout.row()
         row.column().prop(context.scene.Transhuman_tool, "eyebrows_arch", text="Arch ±")
-        row.column().prop(
-            context.scene.Transhuman_tool, "eyebrows_rotate", text="Rotate ±"
-        )
+        row.column().prop(context.scene.Transhuman_tool, "eyebrows_rotate", text="Rotate ±")
 
         row = layout.row()
-        row.column().prop(
-            context.scene.Transhuman_tool, "eyebrows_dist", text="Closenes ±"
-        )
+        row.column().prop(context.scene.Transhuman_tool, "eyebrows_dist", text="Closenes ±")
+        row.column().prop(context.scene.Transhuman_tool, "eyebrow_ridge", text="Protrude +")
+
+        row = layout.row()
+        row.column().prop(context.scene.Transhuman_tool, "smolder", text="Smolder +")
         row.column().label(text="")
 
 class TRANSHUMAN_PT_NOSE_SHAPE(TranshumanPanel, bpy.types.Panel):
@@ -3933,6 +4099,10 @@ class TRANSHUMAN_PT_NOSE_SHAPE(TranshumanPanel, bpy.types.Panel):
         row = layout.row()
         row.column().label(text="Glabella:")
         row.column().prop(context.scene.Transhuman_tool, "glabella", text="±")
+
+        row = layout.row()
+        row.column().label(text="Glabella Length:")
+        row.column().prop(context.scene.Transhuman_tool, "glabella_length", text="+")
 
         row = layout.row()
         row.column().label(text="Bridge:")
@@ -3981,6 +4151,10 @@ class TRANSHUMAN_PT_NOSE_SHAPE(TranshumanPanel, bpy.types.Panel):
         row = layout.row()
         row.column().label(text="Wings arch:")
         row.column().prop(context.scene.Transhuman_tool, "wings_arch", text="±")
+
+        row = layout.row()
+        row.column().label(text="Wings size:")
+        row.column().prop(context.scene.Transhuman_tool, "wings_z", text="±")
 
         row = layout.row()
         row.column().label(text="Cleft:")
@@ -4038,6 +4212,14 @@ class TRANSHUMAN_PT_MOUTH_SHAPE(TranshumanPanel, bpy.types.Panel):
         row.column().prop(context.scene.Transhuman_tool, "bottom_lip", text="±")
 
         row = layout.row()
+        row.column().label(text="Top lip position:")
+        row.column().prop(context.scene.Transhuman_tool, "top_lip_position", text="±")
+
+        row = layout.row()
+        row.column().label(text="Bottom lip position:")
+        row.column().prop(context.scene.Transhuman_tool, "bottom_lip_position", text="±")
+
+        row = layout.row()
         row.column().label(text="Top border shape:")
         row.column().prop(context.scene.Transhuman_tool, "lip_top_border", text="±")
 
@@ -4059,9 +4241,7 @@ class TRANSHUMAN_PT_MOUTH_SHAPE(TranshumanPanel, bpy.types.Panel):
 
         row = layout.row()
         row.column().label(text="Tubercles bottom:")
-        row.column().prop(
-            context.scene.Transhuman_tool, "lip_tubercles_bottom", text="+"
-        )
+        row.column().prop(context.scene.Transhuman_tool, "lip_tubercles_bottom", text="+")
 
         row = layout.row()
         row.column().label(text="Bottom cleft:")
@@ -4078,6 +4258,14 @@ class TRANSHUMAN_PT_MOUTH_SHAPE(TranshumanPanel, bpy.types.Panel):
         row = layout.row()
         row.column().label(text="Philtrum Width:")
         row.column().prop(context.scene.Transhuman_tool, "philtrum", text="±")
+
+        row = layout.row()
+        row.column().label(text="Mouth Corners:")
+        row.column().prop(context.scene.Transhuman_tool, "mouth_corners", text="±")
+
+        row = layout.row()
+        row.column().label(text="Pronounced Orbicularis Oris:")
+        row.column().prop(context.scene.Transhuman_tool, "orbicularis", text="+")
 
 class TRANSHUMAN_PT_EAR_SHAPE(TranshumanPanel, bpy.types.Panel):
     bl_parent_id = "TRANSHUMAN_PT_FACE"
@@ -4100,11 +4288,11 @@ class TRANSHUMAN_PT_EAR_SHAPE(TranshumanPanel, bpy.types.Panel):
 
         row = layout.row()
         row.column().prop(context.scene.Transhuman_tool, "ear_size", text="Ears size ±")
-        row.column().prop(context.scene.Transhuman_tool, "ear_back", text="Pull back")
+        row.column().prop(context.scene.Transhuman_tool, "ear_back", text="Pull back +")
 
         row = layout.row()
-        row.column().prop(context.scene.Transhuman_tool, "ear_pointy", text="Pointy")
-        row.column().label(text="")
+        row.column().prop(context.scene.Transhuman_tool, "ear_pointy", text="Pointy +")
+        row.column().prop(context.scene.Transhuman_tool, "earlobe", text="Earlobe ±")
 
 class TRANSHUMAN_PT_BODY(TranshumanPanel, bpy.types.Panel):
     bl_idname = "TRANSHUMAN_PT_BODY"
@@ -4162,29 +4350,23 @@ class TRANSHUMAN_PT_BODY(TranshumanPanel, bpy.types.Panel):
 
         box = layout.box()
         row = box.row()
-        row.column().prop(
-            context.scene.Transhuman_tool, "breasts", text="Breast Size ±"
-        )
-        row.column().prop(
-            context.scene.Transhuman_tool, "breasts_down", text="Breast Up/Down ±"
-        )
+        row.column().prop(context.scene.Transhuman_tool, "breasts", text="Breast Size ±")
+        row.column().prop(context.scene.Transhuman_tool, "breasts_down", text="Breast Up/Down ±")
 
         row = box.row()
-        row.column().prop(
-            context.scene.Transhuman_tool, "breasts_push", text="Breast Push-up"
-        )
+        row.column().prop(context.scene.Transhuman_tool, "breasts_push", text="Breast Push-up")
         row.column().prop(context.scene.Transhuman_tool, "waist", text="Waist ±")
 
         row = box.row()
-        row.column().prop(context.scene.Transhuman_tool, "hips", text="Hips ±")
-        row.column().prop(
-            context.scene.Transhuman_tool, "buttocks", text="Buttocks Size ±"
-        )
+        row.column().prop(context.scene.Transhuman_tool, "arms", text="Arms Girth ±")
+        row.column().prop(context.scene.Transhuman_tool, "thighs", text="Thigh Girth ±")
 
         row = box.row()
-        row.column().prop(
-            context.scene.Transhuman_tool, "shoulders", text="Shoulder Width ±"
-        )
+        row.column().prop(context.scene.Transhuman_tool, "hips", text="Hips ±")
+        row.column().prop(context.scene.Transhuman_tool, "buttocks", text="Buttocks Size ±")
+
+        row = box.row()
+        row.column().prop(context.scene.Transhuman_tool, "shoulders", text="Shoulder Width ±")
         row.column().label(text="")
 
         box = layout.box()
@@ -4334,6 +4516,34 @@ class TRANSHUMAN_PT_MODIFIERS(TranshumanPanel, bpy.types.Panel):
             context.scene.Transhuman_tool,
             'subdivision_level_for_render', text="Render"
         )
+
+        box = layout.box()
+        row = box.row()
+        row.column().label(
+            text="Bind Finished Transhuman:", icon="OUTLINER_OB_ARMATURE"
+        )
+        row = box.row()
+        row.column().label(icon="BLANK1")
+
+        if getattr(context.scene.Transhuman_tool, "is_bound", False):
+            row.column().operator(
+                "transhuman_operators.unbind_mesh", text="UNBIND",            
+            )
+        else:
+            row.column().operator(
+                "transhuman_operators.bind_mesh", text="BIND",
+            )
+
+        row = box.row() 
+        row.column().label(icon="BLANK1")
+        row.column().label(
+            text="Bind in T-Pose before render", icon="INFO"
+        )
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().label(
+            text="Remember to unbind before modifying appearance", icon="INFO"
+        )
         
         box = layout.box()
         row = box.row()
@@ -4429,34 +4639,6 @@ class TRANSHUMAN_PT_MODIFIERS(TranshumanPanel, bpy.types.Panel):
 
         box = layout.box()
         row = box.row()
-        row.column().label(
-            text="Bind Finished Transhuman:", icon="OUTLINER_OB_ARMATURE"
-        )
-        row = box.row()
-        row.column().label(icon="BLANK1")
-
-        if getattr(context.scene.Transhuman_tool, "is_bound", False):
-            row.column().operator(
-                "transhuman_operators.unbind_mesh", text="UNBIND",            
-            )
-        else:
-            row.column().operator(
-                "transhuman_operators.bind_mesh", text="BIND",
-            )
-
-        row = box.row() 
-        row.column().label(icon="BLANK1")
-        row.column().label(
-            text="Bind in T-Pose before render", icon="INFO"
-        )
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().label(
-            text="Remember to unbind before modifying appearance", icon="INFO"
-        )
-
-        box = layout.box()
-        row = box.row()
         row = box.row()
         row.column().label(
             text="Dynamic Breasts:", icon="MOD_SOFT"
@@ -4494,7 +4676,7 @@ class TRANSHUMAN_PT_MODIFIERS(TranshumanPanel, bpy.types.Panel):
 
         box = layout.box()
         row = box.row()
-        row.column().label(text="FINALIZE HAIR:", icon="MOD_REMESH")
+        row.column().label(text="Finalize hair & Fur:", icon="MOD_REMESH")
         row = box.row()
         row.column().label(icon="BLANK1")
         row.column().operator(
@@ -5028,16 +5210,17 @@ class TRANSHUMAN_PT_WIG(TranshumanPanel, bpy.types.Panel):
 
         box = layout.box()
         row = box.row()
-        row.column().label(text="COLOR OPTIONS", icon="EYEDROPPER")
+        row.column().label(text="Load Hair Style from Preset", icon="FILEBROWSER")
         row = box.row()
         row.column().label(icon="BLANK1")
-        row.column().label(text="Scalp Color:")
-        row.column().preset_prop("scalp_color", text="")
-
+        row.column().prop(context.scene.Transhuman_tool, "saved_presets", text="")
+        col = row.column()
+        col.row().operator("transhuman_operators.load_preset_hair", text="LOAD", icon="FILE")
         row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().label(text="Scalp Strength:")
-        row.column().preset_prop("scalp_fade", text="")
+        
+        box = layout.box()
+        row = box.row()
+        row.column().label(text="COLOR OPTIONS:", icon="EYEDROPPER")
 
         row = box.row()
         row.column().label(icon="BLANK1")
@@ -5065,6 +5248,33 @@ class TRANSHUMAN_PT_WIG(TranshumanPanel, bpy.types.Panel):
         row.column().label(icon="BLANK1")
         row.column().label(text="Highlights Spread:")
         row.column().preset_prop("secondary_intensity_1", text="")
+        row = box.row()
+
+        box = layout.box()
+        row = box.row()
+        row.column().label(text="SCALP SETTINGS:", icon="OPTIONS")
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().label(text="Scalp Color:")
+        row.column().preset_prop("scalp_color", text="")
+
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().prop(context.scene.Transhuman_tool, "scalp_direct_switch")
+
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().label(text="Scalp Opacity:")
+        row.column().preset_prop("scalp_fade", text="")
+
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().label(text="Scalp Bump:")
+        row.column().preset_prop("scalp_hair_bump", text="")
+
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().prop(context.scene.Transhuman_tool, "scalp_selector", text="Scalp Design")
         row = box.row()
         
         box = layout.box()
@@ -5239,6 +5449,18 @@ class TRANSHUMAN_PT_WIG_MESH(TranshumanPanel, bpy.types.Panel):
         row = box.row()
         row.column().label(icon="BLANK1")
         row.column().preset_prop("tubes_amplitude", text="Tubes Curl Amplitude")
+
+        box = layout.box()
+        row = box.row()
+        row.column().label(text="MESH HAIR COUNT:", icon="OPTIONS")
+
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().preset_prop("mesh_hair_amount", text="Duplicate Tubes / Cards")
+        row = box.row()
+        row.column().label(icon="BLANK1")
+        row.column().preset_prop("mesh_hair_spread", text="Separation")
+        row.column().prop(context.scene.Transhuman_tool, "mesh_duplicates_clump_switch")
         
         box = layout.box()
         row = box.row()
@@ -5270,9 +5492,7 @@ class TRANSHUMAN_PT_WIG_MESH(TranshumanPanel, bpy.types.Panel):
         row = box.row()
         row.column().label(icon="BLANK1")
         row.column().preset_prop("random_direction_mesh", text="Random Direction")
-        row = box.row()
-        row.column().label(icon="BLANK1")
-        row.column().label(text="Randomly changes the direction of the hair texture.", icon="INFO")
+        row.column().preset_prop("smooth_hair_mesh", text="Smooth Mesh")
 
         row = box.row()
         row.column().label(icon="BLANK1")
@@ -5293,7 +5513,7 @@ class TRANSHUMAN_PT_WIG_MESH(TranshumanPanel, bpy.types.Panel):
         
         box = layout.box()
         row = box.row()
-        row.column().label(text="MATERIAL:", icon="OPTIONS")
+        row.column().label(text="MATERIAL (Mesh Hair & Scalp):", icon="OPTIONS")
 
         row = box.row()
         row.column().label(icon="BLANK1")

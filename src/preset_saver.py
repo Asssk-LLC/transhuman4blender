@@ -52,16 +52,16 @@ class PresetSaver:
         setattr(context.scene.Transhuman_tool, "preset_name", name)
 
     def load(self, context, name, weight_override=1):
-        return self.load_selected(context, name, None, weight_override)
+        return self.load_selected(context, name, None, weight_override, change_selected_preset = True)
     
-    def load_selected(self, context, name, selected_attrs, weight_override=1):
+    def load_selected(self, context, name, selected_attrs, weight_override=1, change_selected_preset=False):
         preset_name = self.get_preset_name(name)
         try:
             with open(self.get_presets_path() / preset_name, "r") as f:
                 loaded = json.load(f)
                 self.setattrs(loaded, context, weight_override, exclusively=selected_attrs)
-            
-            self.set_selected_preset(context, name)
+            if change_selected_preset:
+                self.set_selected_preset(context, name)
         except FileNotFoundError:
             raise Exception("Preset not found by key: " + name)
 

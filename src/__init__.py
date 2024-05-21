@@ -3511,7 +3511,6 @@ class TRANSHUMAN_OT_FINALIZE_BODY_HAIR(TRANSHUMAN_OT_CONFIRM):
 
         return {"FINISHED"}
 
-
 class TRANSHUMAN_OT_BIND_MESH(TRANSHUMAN_OT_CONFIRM):
     bl_idname = "transhuman_operators.bind_mesh"
     bl_label = "This will enable/bind the mesh to its current state"
@@ -3527,6 +3526,27 @@ class TRANSHUMAN_OT_BIND_MESH(TRANSHUMAN_OT_CONFIRM):
         setattr(context.scene.Transhuman_tool, "is_bound", True)
         
         return {"FINISHED"}
+
+class TRANSHUMAN_OT_IMPORT_PRESET(TRANSHUMAN_OT_CONFIRM):
+    bl_idname = "transhuman_operators.import_preset"
+    bl_label = "Import"
+    bl_description = "This will open a dialog to select a preset file to import into Transhuman."
+
+    filepath: bpy.props.StringProperty(subtype="FILE_PATH") # type: ignore
+    filename_ext = ".json"
+    filter_glob: bpy.props.StringProperty(default="*.json", options={'HIDDEN'}) # type: ignore
+
+    @classmethod
+    def poll(cls, context):
+        return context.object is not None
+
+    def execute(self, context):
+        presetSaver.import_preset(self.filepath)
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
 
 # ------------------------------------------------------------------------
 #    Panel in Object Mode
@@ -3581,6 +3601,12 @@ class TRANSHUMAN_PT_MAIN(TranshumanRootPanel, bpy.types.Panel):
         col = row.column()
         col.row().operator(
             "transhuman_operators.load_preset", text="LOAD", icon="FILE"
+        )
+
+        row = box.row()
+        col = row.column()
+        col.row().operator(
+            "transhuman_operators.import_preset", text="IMPORT", icon="IMPORT"
         )
     
 
@@ -6254,6 +6280,7 @@ classes = (
     TRANSHUMAN_OT_RANDOMIZE_FROM_PRESET,
     TRANSHUMAN_OT_CONCEIVE_FROM_PRESETS,
     TRANSHUMAN_OT_BIND_MESH,
+    TRANSHUMAN_OT_IMPORT_PRESET,
     TRANSHUMAN_OT_UNBIND_MESH,
     TRANSHUMAN_OT_FINALIZE_HAIR,
     TRANSHUMAN_OT_FINALIZE_BODY_HAIR,

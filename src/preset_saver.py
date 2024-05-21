@@ -2,6 +2,7 @@ import json
 import random
 from functools import reduce
 import os
+import shutil
 
 randomize_modes = ['Standard', 'Progressive']
 randomize_modes_enum = [(mode, mode, mode) for mode in randomize_modes]
@@ -218,3 +219,23 @@ class PresetSaver:
 
     def get_ext_prop(self, name):
         return self.ext_props[name]
+
+    def import_preset(self, file_path):
+        # copy the file to the preset folder
+        # if the file already exists, add a number to the end of the name
+        parsed_path = os.path.split(file_path)
+        filename = parsed_path[1]
+        filename_without_ext = os.path.splitext(filename)[0]
+        ext = os.path.splitext(filename)[1]
+        preset_path = self.get_presets_path()
+        target_path = preset_path / filename
+        if os.path.exists(str(target_path)):
+            i = 1
+            while True:
+                new_filename = filename_without_ext + "(" + str(i) + ")" +  ext
+                target_path = preset_path / new_filename
+                if not os.path.exists(str(target_path)):
+                    break
+                i += 1
+
+        shutil.copy(file_path, target_path)

@@ -1550,13 +1550,21 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         description="Select stubble type",
     )
 
-    eye_base_image: create_image_select(
+    eye_base_image: create_node_group_select(
         "eye_base_image",
-        image_suffix="Eyes",
+        suffix="Eyes",
         material="SM5 Eyes Material Transhuman",
-        node="eye_color",
+        node="eye_selector",
         description="Select base color texture",
     )
+
+    # eye_base_image: create_image_select(
+    #     "eye_base_image",
+    #     image_suffix="Eyes",
+    #     material="SM5 Eyes Material Transhuman",
+    #     node="eye_color",
+    #     description="Select base color texture",
+    # )
 
     pupil_switch: create_shape_key_prop(
         "pupil_switch", "Eye Shape Keys Transhuman", "Pupil", max=1

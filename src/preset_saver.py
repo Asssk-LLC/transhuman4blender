@@ -126,10 +126,14 @@ class PresetSaver:
             current = getattr(obj, key, None)
             # if the value is number, we interpolate it
             if type(value) is int or type(value) is float:
+                change = (value - current) * weight_override
+                # some properties are expecting integer values
+                if type(current) is int:
+                    change = int(change)
                 # if the current value is None, it is considered as 0
                 if current is None:
                     current = 0
-                setattr(obj, key, current + (value - current) * weight_override)
+                setattr(obj, key, current + change)
                 return
             # if the value is a list or tuple, we interpolate each value
             elif type(value) is list or type(value) is tuple:

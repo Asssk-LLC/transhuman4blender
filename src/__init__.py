@@ -319,23 +319,23 @@ presetSaver = preset_saver.PresetSaver(
     ],
     {
         "smooth_custom":  [ lambda: bpy.data.objects["SM5 Rest Pose Transhuman"].modifiers[ "Smooth Custom"], "iterations", ],
-        "scalp_color":  [ lambda: bpy.data.materials["SM5 Scalp Material Transhuman" ].node_tree.nodes["scalp_color" ].outputs[0], "default_value", ],
+        "scalp_color":  [ lambda: bpy.data.materials["SM5 Scalp Material Transhuman" ].node_tree.nodes["scalp_color" ].outputs['Color'], "default_value", ],
         "scalp_fade":  [ lambda: bpy.data.materials["SM5 Scalp Material Transhuman" ].node_tree.nodes["scalp_fade" ].inputs[1], "default_value", ],
         "scalp_hair_bump":  [ lambda: bpy.data.materials["SM5 Scalp Material Transhuman"].node_tree.nodes["scalp_hair_bump"].inputs[0], "default_value", ],
-        "hair_mesh_curve": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["hair_mesh_curve"].inputs[1],"default_value",],
+        "hair_mesh_curve": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["hair_mesh_curve"].inputs['Switch'],"default_value",],
         "hair_spread": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["hair_spread"].outputs[0],"default_value",],
         "root_puff": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["root_puff"].inputs[3],"default_value",],
-        "hair_clump_switch": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["hair_clump_switch"].inputs[0],"default_value",],
+        "hair_clump_switch": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["hair_clump_switch"].inputs['Switch'],"default_value",],
         "hair_clump_shape": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["hair_clump_shape"].outputs[0],"default_value",],
         "hair_random_length": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["hair_random_length"].outputs[0],"default_value",],
         "hair_resolution": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["hair_resolution"], "integer",],
-        "hair_curls_switch": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["hair_curls_switch"].inputs[1],"default_value",],
+        "hair_curls_switch": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["hair_curls_switch"].inputs['Switch'],"default_value",],
         "curl_clump_mode": [lambda: bpy.data.node_groups["SM5 Hair Curls"].nodes["curl_clump_mode"].inputs[0],"default_value",],
         "gravity_clump": [lambda: bpy.data.node_groups["SM5 Hair Curls"].nodes["gravity_clump"].outputs[0],"default_value",],
         "curl_amplitude": [lambda: bpy.data.node_groups["SM5 Hair Curls"].nodes["curl_amplitude"].outputs[0],"default_value",],
         "curl_frequency": [lambda: bpy.data.node_groups["SM5 Hair Curls"].nodes["curl_frequency"].inputs[1],"default_value",],
         "curls_randomize": [lambda: bpy.data.node_groups["SM5 Hair Curls"].nodes["curls_randomize"].inputs[0],"default_value",],
-        "waves_curls_switch": [lambda: bpy.data.node_groups["SM5 Hair Curls"].nodes["waves_curls_switch"].inputs[0],"default_value",],
+        "waves_curls_switch": [lambda: bpy.data.node_groups["SM5 Hair Curls"].nodes["waves_curls_switch"].inputs['Switch'],"default_value",],
         "curl_scale": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["curl_scale"].outputs[0],"default_value",],
         "curl_resolution": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["curl_resolution"].outputs[0],"default_value",],
         "loose_hair_decimate": [lambda: bpy.data.node_groups["SM5 Hair Curves"].nodes["loose_hair_decimate"].inputs[0],"default_value",],
@@ -354,7 +354,7 @@ presetSaver = preset_saver.PresetSaver(
         "tubes_amplitude": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["tubes_amplitude"].outputs[0],"default_value",],
         "mesh_hair_amount": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["mesh_hair_amount"].inputs[2],"default_value",],
         "mesh_hair_spread": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["mesh_hair_spread"].outputs[0],"default_value",],                         
-        "inherit_curve_curls": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["inherit_curve_curls"].inputs[1],"default_value",],
+        "inherit_curve_curls": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["inherit_curve_curls"].inputs['Switch'],"default_value",],
         "random_direction_mesh": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["random_direction_mesh"].inputs[0],"default_value",],
         "smooth_hair_mesh": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["smooth_hair_mesh"],"boolean",],
         "mesh_loose_hairs": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["mesh_loose_hairs"].inputs[0],"default_value",],
@@ -362,14 +362,14 @@ presetSaver = preset_saver.PresetSaver(
         "loose_hair_size": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["loose_hair_size"].outputs[0],"default_value",],
         "hair_type_mesh": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["hair_type_mesh"],"integer",],
         "short_hair": [lambda:bpy.data.node_groups["SM5 Hair"].nodes["short_hair"], "boolean",],
-        "interpolate_root_mesh": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["interpolate_root_mesh"].inputs[1],"default_value",],
+        "interpolate_root_mesh": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["interpolate_root_mesh"].inputs['Switch'],"default_value",],
         "interpolate_mesh_amount": [lambda: bpy.data.node_groups["SM5 Hair"].nodes["interpolate_mesh_amount"],"integer",],
-        "mesh_hair_metallic": [lambda: bpy.data.materials["SM5 Hair Mesh Material"].node_tree.nodes["mesh_hair"].inputs[6],"default_value",],
-        "mesh_hair_specular": [lambda: bpy.data.materials["SM5 Hair Mesh Material"].node_tree.nodes["mesh_hair"].inputs[7],"default_value",],
-        "mesh_hair_roughness": [lambda: bpy.data.materials["SM5 Hair Mesh Material"].node_tree.nodes["mesh_hair"].inputs[9],"default_value",],
-        "mesh_hair_ior": [lambda: bpy.data.materials["SM5 Hair Mesh Material"].node_tree.nodes["mesh_hair"].inputs[16],"default_value",],
-        "mesh_hair_clearcoat": [lambda: bpy.data.materials["SM5 Hair Mesh Material"].node_tree.nodes["mesh_hair"].inputs[14],"default_value",],
-        "mesh_hair_clearcoat_roughness": [lambda: bpy.data.materials["SM5 Hair Mesh Material"].node_tree.nodes["mesh_hair"].inputs[15],"default_value",],
+        "mesh_hair_metallic": [lambda: bpy.data.materials["SM5 Hair Mesh Material"].node_tree.nodes["mesh_hair"].inputs['Metallic'],"default_value",],
+        "mesh_hair_specular": [lambda: bpy.data.materials["SM5 Hair Mesh Material"].node_tree.nodes["mesh_hair"].inputs['Specular IOR Level'],"default_value",],
+        "mesh_hair_roughness": [lambda: bpy.data.materials["SM5 Hair Mesh Material"].node_tree.nodes["mesh_hair"].inputs['Roughness'],"default_value",],
+        "mesh_hair_ior": [lambda: bpy.data.materials["SM5 Hair Mesh Material"].node_tree.nodes["mesh_hair"].inputs['IOR'],"default_value",],
+        "mesh_hair_clearcoat": [lambda: bpy.data.materials["SM5 Hair Mesh Material"].node_tree.nodes["mesh_hair"].inputs['Coat IOR'],"default_value",],
+        "mesh_hair_clearcoat_roughness": [lambda: bpy.data.materials["SM5 Hair Mesh Material"].node_tree.nodes["mesh_hair"].inputs['Coat Roughness'],"default_value",],
         "mesh_translucent": [lambda: bpy.data.materials["SM5 Hair Mesh Material"].node_tree.nodes["mesh_translucent"].inputs[0],"default_value",],
         "eyebrows_color_group":  [ lambda: bpy.data.node_groups["SM5 Eyebrows Hair Color Transhuman" ].nodes["eyebrows_color_group" ].outputs[0], "default_value", ],
         "body_hair_color":  [ lambda: bpy.data.node_groups["SM5 Body Hair Color Transhuman" ].nodes["body_hair_color" ].outputs[0], "default_value", ],
@@ -403,9 +403,9 @@ presetSaver = preset_saver.PresetSaver(
         "halo":  [ lambda: bpy.data.materials["SM5 Eyes Material Transhuman" ].node_tree.nodes["halo" ].inputs[0], "default_value", ],
         "halo_color":  [ lambda: bpy.data.materials["SM5 Eyes Material Transhuman" ].node_tree.nodes["halo_color" ].outputs[0], "default_value", ],
         "sclera_cornea_mixer":  [ lambda: bpy.data.materials["SM5 Cornea Material Transhuman" ].node_tree.nodes["sclera_cornea_mixer" ].inputs[0], "default_value", ],
-        "sclera_cornea_settings_color":  [ lambda: bpy.data.materials["SM5 Cornea Material Transhuman" ].node_tree.nodes["sclera_cornea_settings" ].inputs[0], "default_value", ],
-        "sclera_cornea_settings_transmission":  [ lambda: bpy.data.materials["SM5 Cornea Material Transhuman" ].node_tree.nodes["sclera_cornea_settings" ].inputs[17], "default_value", ],
-        "sclera_cornea_settings_roughness":  [ lambda: bpy.data.materials["SM5 Cornea Material Transhuman" ].node_tree.nodes["sclera_cornea_settings" ].inputs[18], "default_value", ],
+        "sclera_cornea_settings_color":  [ lambda: bpy.data.materials["SM5 Cornea Material Transhuman" ].node_tree.nodes["sclera_cornea_settings" ].inputs['Base Color'], "default_value", ],
+        "sclera_cornea_settings_transmission":  [ lambda: bpy.data.materials["SM5 Cornea Material Transhuman" ].node_tree.nodes["sclera_cornea_settings" ].inputs['Transmission Weight'], "default_value", ],
+        "sclera_cornea_settings_roughness":  [ lambda: bpy.data.materials["SM5 Cornea Material Transhuman" ].node_tree.nodes["sclera_cornea_settings" ].inputs['Roughness'], "default_value", ],
         "sclera_cornea":  [ lambda: bpy.data.materials[ "SM5 Cornea Material Transhuman" ].node_tree.nodes["sclera_cornea"], "layer_name", ],
         "eye_redness":  [ lambda: bpy.data.materials["SM5 Eyes Material Transhuman" ].node_tree.nodes["eye_redness" ].inputs[0], "default_value", ],
         "eye_settings":  [ lambda: bpy.data.materials["SM5 Cornea Material Transhuman" ].node_tree.nodes["eye_settings" ].inputs[18], "default_value", ],
@@ -414,17 +414,17 @@ presetSaver = preset_saver.PresetSaver(
         "eyebrows_curves_thickness":  [ lambda: bpy.data.node_groups["SM5 Eyebrows Transhuman" ].nodes["thickness" ].outputs[0], "default_value", ],
         "eyebrows_curves_spread":  [ lambda: bpy.data.node_groups["SM5 Eyebrows Transhuman" ].nodes["eyebrows_spread" ].outputs[0], "default_value", ],
         "eyebrows_curves_amount":  [ lambda: bpy.data.node_groups["SM5 Eyebrows Transhuman" ].nodes["eyebrows_amount" ].inputs[2], "default_value", ],
-        "eyebrows_to_mesh":  [ lambda:bpy.data.node_groups["SM5 Eyebrows Transhuman"].nodes["eyebrows_to_mesh"].inputs[1], "default_value", ],
+        "eyebrows_to_mesh":  [ lambda:bpy.data.node_groups["SM5 Eyebrows Transhuman"].nodes["eyebrows_to_mesh"].inputs['Switch'], "default_value", ],
         "eyebrows_type":  [ lambda:bpy.data.node_groups["SM5 Eyebrows Transhuman"].nodes["eyebrows_type"], "integer",],
-        "top_eyelashes_to_mesh":  [ lambda:bpy.data.node_groups["SM5 Top Eyelashes Transhuman"].nodes["top_eyelashes_to_mesh"].inputs[1], "default_value", ],
+        "top_eyelashes_to_mesh":  [ lambda:bpy.data.node_groups["SM5 Top Eyelashes Transhuman"].nodes["top_eyelashes_to_mesh"].inputs['Switch'], "default_value", ],
         "top_eyelashes_type":  [ lambda:bpy.data.node_groups["SM5 Top Eyelashes Transhuman"].nodes["top_eyelashes_type"], "integer",],
-        "bottom_eyelashes_to_mesh":  [ lambda:bpy.data.node_groups["SM5 Bottom Eyelashes Transhuman"].nodes["bottom_eyelashes_to_mesh"].inputs[1], "default_value", ],
+        "bottom_eyelashes_to_mesh":  [ lambda:bpy.data.node_groups["SM5 Bottom Eyelashes Transhuman"].nodes["bottom_eyelashes_to_mesh"].inputs['Switch'], "default_value", ],
         "bottom_eyelashes_type":  [ lambda:bpy.data.node_groups["SM5 Bottom Eyelashes Transhuman"].nodes["bottom_eyelashes_type"], "integer",],
-        "beard_to_mesh":  [ lambda:bpy.data.node_groups["SM5 Beard Transhuman"].nodes["beard_to_mesh"].inputs[1], "default_value", ],
+        "beard_to_mesh":  [ lambda:bpy.data.node_groups["SM5 Beard Transhuman"].nodes["beard_to_mesh"].inputs['Switch'], "default_value", ],
         "beard_type":  [ lambda:bpy.data.node_groups["SM5 Beard Transhuman"].nodes["beard_type"], "integer",],
-        "nosehair_to_mesh":  [ lambda:bpy.data.node_groups["SM5 Nose Hairs Transhuman"].nodes["nosehair_to_mesh"].inputs[1], "default_value", ],
+        "nosehair_to_mesh":  [ lambda:bpy.data.node_groups["SM5 Nose Hairs Transhuman"].nodes["nosehair_to_mesh"].inputs['Switch'], "default_value", ],
         "nosehair_type":  [ lambda:bpy.data.node_groups["SM5 Nose Hairs Transhuman"].nodes["nosehair_type"], "integer",],
-        "bodyhair_to_mesh":  [ lambda:bpy.data.node_groups["SM5 Body Hair Transhuman"].nodes["bodyhair_to_mesh"].inputs[1], "default_value", ],
+        "bodyhair_to_mesh":  [ lambda:bpy.data.node_groups["SM5 Body Hair Transhuman"].nodes["bodyhair_to_mesh"].inputs['Switch'], "default_value", ],
         "eyelashes_color":  [ lambda: bpy.data.node_groups["SM5 Eyelashes Color Transhuman" ].nodes["eyelashes_color" ].outputs[0], "default_value", ],
         "eyelashes_thickness_top":  [ lambda: bpy.data.node_groups["SM5 Top Eyelashes Transhuman" ].nodes["eyelashes_thickness" ].outputs[0], "default_value", ],
         "eyelashes_thickness_bottom":  [ lambda: bpy.data.node_groups["SM5 Bottom Eyelashes Transhuman" ].nodes["eyelashes_thickness" ].outputs[0], "default_value", ],
@@ -467,18 +467,18 @@ presetSaver = preset_saver.PresetSaver(
         "blush_3":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["blush_3" ].inputs[0], "default_value", ],
         "blush_3_color":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["blush_3_color" ].inputs[7], "default_value", ],
         "blush_intensity":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["blush_intensity" ].color_ramp.elements[1], "position", ],
-        "blush_settings_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["blush_settings" ].inputs[6], "default_value", ],
-        "blush_settings_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["blush_settings" ].inputs[9], "default_value", ],
-        "lipstick_color":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lipstick" ].inputs[7], "default_value", ],
+        "blush_settings_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["blush_settings" ].inputs['Metallic'], "default_value", ],
+        "blush_settings_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["blush_settings" ].inputs['Roughness'], "default_value", ],
+        "lipstick_color":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lipstick" ].inputs[7], "default_value", ], # check
         "lip_gloss":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lip_gloss" ].inputs[0], "default_value", ],
         "lipstick_amount":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lipstick" ].inputs[0], "default_value", ],
-        "lipstick_settings_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lipstick_settings" ].inputs[6], "default_value", ],
-        "lipstick_settings_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lipstick_settings" ].inputs[9], "default_value", ],
+        "lipstick_settings_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lipstick_settings" ].inputs['Metallic'], "default_value", ],
+        "lipstick_settings_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lipstick_settings" ].inputs['Roughness'], "default_value", ],
         "lip_liner":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lip_liner" ].inputs[0], "default_value", ],
         "lip_liner_gradient":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lip_liner_gradient" ].inputs[0], "default_value", ],
         "lip_liner_color":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lip_liner_color" ].outputs[0], "default_value", ],
-        "lip_liner_settings_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lip_liner_settings" ].inputs[6], "default_value", ],
-        "lip_liner_settings_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lip_liner_settings" ].inputs[9], "default_value", ],
+        "lip_liner_settings_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lip_liner_settings" ].inputs['Metallic'], "default_value", ],
+        "lip_liner_settings_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lip_liner_settings" ].inputs['Roughness'], "default_value", ],
         "eyeshadow_amount":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyeshadow" ].inputs[0], "default_value", ],
         "eyeshadow_intensity":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyeshadow_intensity" ].color_ramp.elements[1], "position", ],
         "eyeshadow_lid_colors_main":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyeshadow_lid_colors" ].inputs[6], "default_value", ],
@@ -486,8 +486,8 @@ presetSaver = preset_saver.PresetSaver(
         "eyeshadow_tip":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyeshadow_tip" ].inputs[0], "default_value", ],
         "eyeshadow_lid_tail":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyeshadow_lid_tail" ].inputs[7], "default_value", ],
         "eyeshadow_tail":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyeshadow_tail" ].inputs[0], "default_value", ],
-        "eyeshadow_settings_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyeshadow_settings" ].inputs[6], "default_value", ],
-        "eyeshadow_settings_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyeshadow_settings" ].inputs[9], "default_value", ],
+        "eyeshadow_settings_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyeshadow_settings" ].inputs['Metallic'], "default_value", ],
+        "eyeshadow_settings_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyeshadow_settings" ].inputs['Roughness'], "default_value", ],
         "lashline_amount":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lashline" ].inputs[0], "default_value", ],
         "lashline_intensity":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lashline_intensity" ].color_ramp.elements[1], "position", ],
         "lashline_main_under_color":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lashline_main_under_color" ].inputs[7], "default_value", ],
@@ -497,8 +497,8 @@ presetSaver = preset_saver.PresetSaver(
         "lashline_tail":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lashline_tail" ].inputs[0], "default_value", ],
         "lashline_main_under_color_smudge":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lashline_main_under_color" ].inputs[6], "default_value", ],
         "lashline_under":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lashline_under" ].inputs[0], "default_value", ],
-        "lashline_settings_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lashline_settings" ].inputs[6], "default_value", ],
-        "lashline_settings_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lashline_settings" ].inputs[9], "default_value", ],
+        "lashline_settings_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lashline_settings" ].inputs['Metallic'], "default_value", ],
+        "lashline_settings_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["lashline_settings" ].inputs['Roughness'], "default_value", ],
         "inner_shadow_1":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["inner_shadow_1" ].inputs[0], "default_value", ],
         "inner_shadow_1_color":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["inner_shadow_1_color" ].inputs[7], "default_value", ],
         "inner_shadow_2":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["inner_shadow_2" ].inputs[0], "default_value", ],
@@ -507,8 +507,8 @@ presetSaver = preset_saver.PresetSaver(
         "inner_shadow_3_color":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["inner_shadow_3_color" ].inputs[7], "default_value", ],
         "inner_shadow_intensity":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["inner_shadow_intensity" ].color_ramp.elements[1], "position", ],
         "inner_shadow_granularity":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["inner_shadow_granularity" ].inputs[0], "default_value", ],
-        "inner_shadow_settings_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["inner_shadow_settings" ].inputs[6], "default_value", ],
-        "inner_shadow_settings_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["inner_shadow_settings" ].inputs[9], "default_value", ],
+        "inner_shadow_settings_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["inner_shadow_settings" ].inputs['Metallic'], "default_value", ],
+        "inner_shadow_settings_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["inner_shadow_settings" ].inputs['Roughness'], "default_value", ],
         "outer_shadow_1":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["outer_shadow_1" ].inputs[0], "default_value", ],
         "outer_shadow_1_color":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["outer_shadow_1_color" ].inputs[7], "default_value", ],
         "outer_shadow_2":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["outer_shadow_2" ].inputs[0], "default_value", ],
@@ -517,8 +517,8 @@ presetSaver = preset_saver.PresetSaver(
         "outer_shadow_3_color":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["outer_shadow_3_color" ].inputs[7], "default_value", ],
         "outer_shadow_intensity":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["outer_shadow_intensity" ].color_ramp.elements[1], "position", ],
         "outer_shadow_granularity":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["outer_shadow_granularity" ].inputs[0], "default_value", ],
-        "outer_shadow_settings_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["outer_shadow_settings" ].inputs[6], "default_value", ],
-        "outer_shadow_settings_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["outer_shadow_settings" ].inputs[9], "default_value", ],
+        "outer_shadow_settings_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["outer_shadow_settings" ].inputs['Metallic'], "default_value", ],
+        "outer_shadow_settings_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["outer_shadow_settings" ].inputs['Roughness'], "default_value", ],
         "highlight_shadow":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["highlight" ].inputs[0], "default_value", ],
         "highlight_intensity":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["highlight_intensity" ].color_ramp.elements[1], "position", ],
         "highlight_color":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["highlight_colors" ].inputs[6], "default_value", ],
@@ -526,8 +526,8 @@ presetSaver = preset_saver.PresetSaver(
         "crease_amount":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["crease_amount" ].inputs[0], "default_value", ],
         "highlight_contour":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["highlight_colors" ].inputs[7], "default_value", ],
         "contour_amount":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["contour_amount" ].inputs[0], "default_value", ],
-        "highlight_settings_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["highlight_settings" ].inputs[6], "default_value", ],
-        "highlight_settings_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["highlight_settings" ].inputs[9], "default_value", ],
+        "highlight_settings_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["highlight_settings" ].inputs['Metallic'], "default_value", ],
+        "highlight_settings_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["highlight_settings" ].inputs['Roughness'], "default_value", ],
         "eyeliner_top_1":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyeliner_top_1" ].inputs[0], "default_value", ],
         "eyeliner_bottom_1":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyeliner_bottom_1" ].inputs[0], "default_value", ],
         "eyeliner_top_2":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyeliner_top_2" ].inputs[0], "default_value", ],
@@ -541,8 +541,8 @@ presetSaver = preset_saver.PresetSaver(
         "eyeliner_top_6":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyeliner_top_6" ].inputs[0], "default_value", ],
         "eyeliner_bottom_6":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyeliner_bottom_6" ].inputs[0], "default_value", ],
         "eyeliner_settings_color":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyeliner_settings" ].inputs[0], "default_value", ],
-        "eyeliner_settings_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyeliner_settings" ].inputs[6], "default_value", ],
-        "eyeliner_settings_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyeliner_settings" ].inputs[9], "default_value", ],
+        "eyeliner_settings_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyeliner_settings" ].inputs['Metallic'], "default_value", ],
+        "eyeliner_settings_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyeliner_settings" ].inputs['Roughness'], "default_value", ],
         "facial_paint_1":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["facial_paint_1" ].inputs[0], "default_value", ],
         "facial_paint_1_color":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["facial_paint_1_color" ].inputs[7], "default_value", ],
         "facial_paint_2":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["facial_paint_2" ].inputs[0], "default_value", ],
@@ -551,15 +551,15 @@ presetSaver = preset_saver.PresetSaver(
         "facial_paint_3_color":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["facial_paint_3_color" ].inputs[7], "default_value", ],
         "facial_paint_intensity":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["facial_paint_intensity" ].color_ramp.elements[1], "position", ],
         "facial_paint_granularity":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["facial_paint_granularity" ].inputs[0], "default_value", ],
-        "facial_paint_settings_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["facial_paint_settings" ].inputs[6], "default_value", ],
-        "facial_paint_settings_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["facial_paint_settings" ].inputs[9], "default_value", ],
+        "facial_paint_settings_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["facial_paint_settings" ].inputs['Metallic'], "default_value", ],
+        "facial_paint_settings_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["facial_paint_settings" ].inputs['Roughness'], "default_value", ],
         "eyebrows_amount":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyebrows" ].inputs[0], "default_value", ],
         "eyebrows_fade":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["eyebrows_fade" ].inputs[0], "default_value", ],
         "nail_amount":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["nail_amount" ].inputs[0], "default_value", ],
         "nail_polish_color":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["nail_polish_color" ].inputs[7], "default_value", ],
-        "nail_polish_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["nail_polish" ].inputs[6], "default_value", ],
-        "nail_polish_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["nail_polish" ].inputs[9], "default_value", ],
-        "nail_polish_coat":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["nail_polish" ].inputs[14], "default_value", ],
+        "nail_polish_metallic":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["nail_polish" ].inputs['Metallic'], "default_value", ],
+        "nail_polish_roughness":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["nail_polish" ].inputs['Roughness'], "default_value", ],
+        "nail_polish_coat":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["nail_polish" ].inputs['Coat IOR'], "default_value", ],
         "nail_glitter":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["nail_glitter" ].inputs[0], "default_value", ],
         "teeth_age":  [ lambda: bpy.data.materials["SM5 Teeth Material Transhuman" ].node_tree.nodes["teeth_age" ].outputs[0], "default_value", ],
         "teeth_saturation":  [ lambda: bpy.data.materials["SM5 Teeth Material Transhuman" ].node_tree.nodes["teeth_saturation" ].inputs[1], "default_value", ],
@@ -571,7 +571,7 @@ presetSaver = preset_saver.PresetSaver(
         "secondary_intensity_1":  [ lambda: bpy.data.node_groups["SM5 Hair Color Transhuman" ].nodes["secondary_intensity" ].color_ramp.elements[1], "position", ],
         "tattoo_height":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["tattoo_height" ].inputs[0], "default_value", ],
         "tattoo_amount":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["tattoo_switch" ].inputs[0], "default_value", ],
-        "beard_curls_switch":  [ lambda: bpy.data.node_groups["SM5 Beard Transhuman" ].nodes["beard_curls_switch" ].inputs[1], "default_value", ],
+        "beard_curls_switch":  [ lambda: bpy.data.node_groups["SM5 Beard Transhuman" ].nodes["beard_curls_switch" ].inputs['Switch'], "default_value", ],
         "beard_curls_scale":  [ lambda: bpy.data.node_groups["SM5 Beard Transhuman" ].nodes["beard_curl_scale"].outputs[0],  "default_value", ],   
         "beard_noise":  [ lambda: bpy.data.node_groups["SM5 Beard Transhuman" ].nodes["beard_noise" ].outputs[0], "default_value", ],   
         "nipples_def":  [ lambda: bpy.data.materials["SM5 Skin Material Transhuman" ].node_tree.nodes["nipple_def" ].color_ramp.elements[0], "position", ],
@@ -900,22 +900,6 @@ def create_vertex_select(
         ],
         description=description,
         update=lambda self, context: set_selected_image(
-            self, prop_name, material, node
-        ),
-    )
-
-def create_node_group_select(
-    prop_name, material, node, prefix=None, suffix=None, description="Select base color"
-):
-    return bpy.props.EnumProperty(
-        items=lambda self, context: [
-            (ng.name, ng.name, ng.name)
-            for ng in bpy.data.node_groups
-            if (prefix is None or ng.name.startswith(prefix))
-            and (suffix is None or ng.name.endswith(suffix))
-        ],
-        description=description,
-        update=lambda self, context: set_selected_node_group(
             self, prop_name, material, node
         ),
     )
@@ -1324,7 +1308,8 @@ def set_mesh_duplicates_clump_switch_value(self, context):
 
 def refresh_gender_definition(context):
     f_base = context.scene.Transhuman_tool["female_base"]
-    m_base = context.scene.Transhuman_tool["male_base"]
+    # at the loading phase 'male_base' may not exist, in which case it should be treated as 0
+    m_base = context.scene.Transhuman_tool["male_base"] if 'male_base' in context.scene.Transhuman_tool else 0
     divide_by = f_base + m_base
 
     if divide_by == 0:
@@ -1648,6 +1633,11 @@ class Transhuman_Properties(bpy.types.PropertyGroup):
         material="SM5 Skin Material Transhuman",
         node="scars_selector",
         description="Select scars",
+    )
+
+    tattoo_switch: bpy.props.BoolProperty(
+        name="Tattoo",
+        update=lambda self, context: set_tattoo_switch_value(self, context),
     )
 
     scalp_selector: create_node_group_select(
@@ -3327,7 +3317,7 @@ class TRANSHUMAN_OT_LOAD_ORIGINAL_COLLECTION(Operator):
         with bpy.data.libraries.load(str(path.absolute())) as (data_from, data_to):
             data_to.collections.append(th4b_collection_name)
             data_to.images = data_from.images
-            data_to.node_groups = ['SM5 Freckles 1 Scars']
+            data_to.node_groups = data_from.node_groups
             data_to.actions = data_from.actions
 
         collection = bpy.data.collections.get(th4b_collection_name)

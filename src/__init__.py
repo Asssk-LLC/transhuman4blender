@@ -3689,12 +3689,12 @@ class TRANSHUMAN_PT_EYES(TranshumanPanel, bpy.types.Panel):
 
         row = box.row()
         row.column().label(icon="BLANK1")
-        row.column().label(text="Cornea Roughness:")
+        row.column().label(text="Cornea Transparency:")
         row.column().preset_prop("eye_settings", text="")
         
         row = box.row()
         row.column().label(icon="BLANK1")
-        row.column().label(text="Cornea Reflectivity:")
+        row.column().label(text="Cornea Extra Reflectivity:")
         row.column().preset_prop("cornea_reflective", text="")
 
         row = box.row()
@@ -3715,7 +3715,7 @@ class TRANSHUMAN_PT_EYES(TranshumanPanel, bpy.types.Panel):
         row.column().label(icon="BLANK1")
         row.column().prop(context.scene.Transhuman_tool, "pupil_cat", text="Cat")
         row.column().prop(context.scene.Transhuman_tool, "pupil_goat", text="Goat")
-        row.column().prop(context.scene.Transhuman_tool, "pupil_star", text="Star")
+        row.column().prop(context.scene.Transhuman_tool, "pupil_star", text="Cross")
 
         box = layout.box()
         row = box.row()
@@ -3820,7 +3820,7 @@ class TRANSHUMAN_PT_SKIN(TranshumanPanel, bpy.types.Panel):
 
         row = box.row()
         row.column().preset_prop("scars_color_saturation", text="Color intensity")
-        row.column().preset_prop("scars_color_brightness", text="Brightness")
+        row.column().preset_prop("scars_color_brightness", text="Brighten/Darken")
 
         box = layout.box()
         row = box.row()
@@ -3847,7 +3847,7 @@ class TRANSHUMAN_PT_SKIN(TranshumanPanel, bpy.types.Panel):
             "wm.url_open", text="Get more Scars & Tattoos", icon="URL"
         )
         op.url = (
-            "https://sm5.heledahn.com/collections/3d-models/transhuman/scars-tattoos"
+            "https://sm5.heledahn.com/collections/transhuman4blender"
         )
         row.column().label(icon="BLANK1")
         row = box.row()
@@ -4470,7 +4470,7 @@ class TRANSHUMAN_PT_PERSONA(TranshumanPanel, bpy.types.Panel):
         )
 
         op = row.column().operator("wm.url_open", text="Browse Catalogue", icon="URL")
-        op.url = "https://sm5.heledahn.com/collections/transhuman"
+        op.url = "https://sm5.heledahn.com/collections/transhuman4blender"
 
         row = box.row()
         row.column().label(text="", icon="BLANK1")
